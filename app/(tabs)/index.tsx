@@ -1,11 +1,10 @@
 import { colors } from "@/constants/colors";
 import { icons } from "@/constants/icons";
-import {
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-} from "@expo-google-fonts/poppins";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Audio } from "expo-av";
+import axios from "axios";
+import { API_URL } from "@/configs";
 
 const styles = StyleSheet.create({
   container: {
@@ -202,18 +201,86 @@ export default function Index() {
   const [fileInputType, setFileInputType] = useState<"record" | "upload">(
     "record"
   );
-  const [recording, setRecording] = useState<boolean>(false);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [uploadedFile, setUploadedFile] = useState<boolean>(false);
-
-  const handleRecording = () => setRecording(!recording);
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
 
   const handleUploadedFile = () => {
     if (uploadedFile) return;
-
     setUploadedFile(true);
   };
 
   const deleteUploadedFile = () => setUploadedFile(false);
+
+  async function startRecording() {
+    try {
+      if (permissionResponse?.status !== "granted") {
+        await requestPermission();
+      }
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync({
+        ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        android: {
+          ...Audio.RecordingOptionsPresets.HIGH_QUALITY.android,
+          extension: ".mp3",
+          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+          audioEncoder: Audio.AndroidAudioEncoder.AAC,
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 128000,
+        },
+      });
+      setRecording(recording);
+    } catch (err) {
+      console.log("Recording failed:", err);
+    }
+  }
+
+  async function stopRecording() {
+    if (!recording) return;
+
+    try {
+      await recording.stopAndUnloadAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+      });
+      const uri = recording.getURI();
+
+      if (uri) {
+        const formData = new FormData();
+        const fileName = uri.split("/").pop() || "audio.m4a";
+        const file = {
+          uri: uri,
+          name: fileName,
+          type: "audio/x-m4a",
+        };
+
+        formData.append("audio", file as any);
+        console.log("Attempting to send file:", fileName);
+        console.log("File URI:", uri);
+
+        const response = await axios.post(`${API_URL}/getReciter`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          timeout: 30000,
+        });
+
+        console.log("Server response:", JSON.stringify(response.data, null, 2));
+      }
+    } catch (err: any) {
+      console.log("Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+    }
+    setRecording(null);
+  }
 
   return (
     <View style={styles.container}>
@@ -259,7 +326,10 @@ export default function Index() {
       </View>
       {fileInputType === "record" && (
         <View style={fileRecordStyles.container}>
-          <Pressable onPress={handleRecording} style={fileRecordStyles.button}>
+          <Pressable
+            onPress={recording ? stopRecording : startRecording}
+            style={fileRecordStyles.button}
+          >
             <Image
               source={recording ? icons.stop : icons.play}
               tintColor={colors.green}
