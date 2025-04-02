@@ -90,7 +90,38 @@ const toggleStyle = StyleSheet.create({
   },
 });
 
-const inputStyles = StyleSheet.create({
+const fileRecordStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    paddingTop: 48,
+    gap: 32,
+    marginTop: 32,
+  },
+  heading: {
+    fontSize: 18,
+    fontFamily: "Poppins_600SemiBold",
+    textTransform: "capitalize",
+    color: colors.green,
+    width: "100%",
+    textAlign: "center",
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 200,
+    height: 200,
+    borderWidth: 2,
+    borderColor: colors.green,
+    borderRadius: 9999,
+    backgroundColor: colors.white,
+  },
+  icon: {
+    width: 100,
+    height: 100,
+  },
+});
+
+const fileUploadStyles = StyleSheet.create({
   container: {
     position: "relative",
     alignItems: "center",
@@ -171,7 +202,10 @@ export default function Index() {
   const [fileInputType, setFileInputType] = useState<"record" | "upload">(
     "record"
   );
+  const [recording, setRecording] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<boolean>(false);
+
+  const handleRecording = () => setRecording(!recording);
 
   const handleUploadedFile = () => {
     if (uploadedFile) return;
@@ -223,17 +257,36 @@ export default function Index() {
           </Text>
         </Pressable>
       </View>
+      {fileInputType === "record" && (
+        <View style={fileRecordStyles.container}>
+          <Pressable onPress={handleRecording} style={fileRecordStyles.button}>
+            <Image
+              source={recording ? icons.stop : icons.play}
+              tintColor={colors.green}
+              style={fileRecordStyles.icon}
+            />
+          </Pressable>
+          {!recording && (
+            <Text style={fileRecordStyles.heading}>
+              Press to start recording
+            </Text>
+          )}
+        </View>
+      )}
       {fileInputType === "upload" && (
-        <Pressable onPress={handleUploadedFile} style={inputStyles.container}>
+        <Pressable
+          onPress={handleUploadedFile}
+          style={fileUploadStyles.container}
+        >
           {!uploadedFile && (
             <>
-              <Text style={inputStyles.heading}>Choose a file</Text>
+              <Text style={fileUploadStyles.heading}>Choose a file</Text>
               <Image
                 source={icons.upload}
                 tintColor={colors.green}
-                style={inputStyles.icon}
+                style={fileUploadStyles.icon}
               />
-              <Text style={inputStyles.text}>
+              <Text style={fileUploadStyles.text}>
                 PNG, SVG, PDF, GIF or JPG (max of 25mb)
               </Text>
             </>
@@ -243,23 +296,23 @@ export default function Index() {
               <Image
                 source={icons.uploaded}
                 tintColor={colors.green}
-                style={inputStyles.icon}
+                style={fileUploadStyles.icon}
               />
-              <View style={inputStyles.inner}>
-                <Text style={inputStyles.fileText}>Sudais.mp3</Text>
+              <View style={fileUploadStyles.inner}>
+                <Text style={fileUploadStyles.fileText}>Sudais.mp3</Text>
                 <Pressable onPress={deleteUploadedFile}>
                   <Image
                     source={icons.delete}
                     tintColor={colors.red}
-                    style={inputStyles.deleteIcon}
+                    style={fileUploadStyles.deleteIcon}
                   />
                 </Pressable>
               </View>
             </>
           )}
-          <View style={inputStyles.buttonContainer}>
-            <Pressable style={inputStyles.button}>
-              <Text style={inputStyles.buttonText}>Upload</Text>
+          <View style={fileUploadStyles.buttonContainer}>
+            <Pressable style={fileUploadStyles.button}>
+              <Text style={fileUploadStyles.buttonText}>Upload</Text>
             </Pressable>
           </View>
         </Pressable>
