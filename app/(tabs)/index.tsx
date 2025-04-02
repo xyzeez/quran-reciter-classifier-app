@@ -6,6 +6,7 @@ import { Audio } from "expo-av";
 import axios from "axios";
 import { API_URL } from "@/configs";
 import * as DocumentPicker from "expo-document-picker";
+import { reciterService } from "@/services/reciterService";
 
 const styles = StyleSheet.create({
   container: {
@@ -228,23 +229,15 @@ export default function Index() {
 
     try {
       setIsUploading(true);
-      const formData = new FormData();
-      formData.append("audio", {
+      console.log("Uploading file:", uploadedFile.name);
+
+      const response = await reciterService.predictReciter({
         uri: uploadedFile.uri,
         name: uploadedFile.name,
         type: "audio/mpeg",
-      } as any);
-
-      console.log("Uploading file:", uploadedFile.name);
-
-      const response = await axios.post(`${API_URL}/getReciter`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        timeout: 30000,
       });
 
-      console.log("Server response:", JSON.stringify(response.data, null, 2));
+      console.log("Server response:", JSON.stringify(response, null, 2));
       setUploadedFile(null);
     } catch (err: any) {
       console.log("Upload error:", {
@@ -298,26 +291,17 @@ export default function Index() {
       });
 
       if (uri) {
-        const formData = new FormData();
         const fileName = uri.split("/").pop() || "audio.m4a";
-        const file = {
-          uri: uri,
-          name: fileName,
-          type: "audio/x-m4a",
-        };
-
-        formData.append("audio", file as any);
         console.log("Attempting to send file:", fileName);
         console.log("File URI:", uri);
 
-        const response = await axios.post(`${API_URL}/getReciter`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          timeout: 30000,
+        const response = await reciterService.predictReciter({
+          uri: uri,
+          name: fileName,
+          type: "audio/x-m4a",
         });
 
-        console.log("Server response:", JSON.stringify(response.data, null, 2));
+        console.log("Server response:", JSON.stringify(response, null, 2));
       }
     } catch (err: any) {
       console.log("Error details:", {
