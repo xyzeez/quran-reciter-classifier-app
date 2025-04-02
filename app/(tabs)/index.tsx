@@ -289,11 +289,13 @@ export default function Index() {
     if (!recording) return;
 
     try {
+      const uri = recording.getURI();
       await recording.stopAndUnloadAsync();
+      setRecording(null);
+
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
       });
-      const uri = recording.getURI();
 
       if (uri) {
         const formData = new FormData();
@@ -323,8 +325,8 @@ export default function Index() {
         response: err.response?.data,
         status: err.response?.status,
       });
+      setRecording(null);
     }
-    setRecording(null);
   }
 
   return (
