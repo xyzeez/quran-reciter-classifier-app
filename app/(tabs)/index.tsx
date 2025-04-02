@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Audio } from "expo-av";
 import axios from "axios";
 import { API_URL } from "@/configs";
+import * as DocumentPicker from "expo-document-picker";
 
 const styles = StyleSheet.create({
   container: {
@@ -135,14 +136,6 @@ const fileUploadStyles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: colors.white,
   },
-  heading: {
-    fontSize: 18,
-    fontFamily: "Poppins_600SemiBold",
-    textTransform: "capitalize",
-    color: colors.green,
-    width: "100%",
-    textAlign: "center",
-  },
   text: {
     fontSize: 12,
     fontFamily: "Poppins_400Regular",
@@ -152,7 +145,7 @@ const fileUploadStyles = StyleSheet.create({
   icon: {
     width: 100,
     height: 100,
-    marginBlock: 16,
+    marginBottom: 16,
   },
   inner: {
     flexDirection: "row",
@@ -202,15 +195,67 @@ export default function Index() {
     "record"
   );
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<boolean>(false);
+  const [uploadedFile, setUploadedFile] = useState<{
+    name: string;
+    uri: string;
+  } | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
 
-  const handleUploadedFile = () => {
-    if (uploadedFile) return;
-    setUploadedFile(true);
+  const handleUploadedFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "audio/*",
+        copyToCacheDirectory: true,
+      });
+
+      if (result.assets && result.assets[0]) {
+        const file = result.assets[0];
+        setUploadedFile({
+          name: file.name,
+          uri: file.uri,
+        });
+      }
+    } catch (err) {
+      console.log("Document picker error:", err);
+    }
   };
 
-  const deleteUploadedFile = () => setUploadedFile(false);
+  const deleteUploadedFile = () => setUploadedFile(null);
+
+  const handleFileUpload = async () => {
+    if (!uploadedFile) return;
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("audio", {
+        uri: uploadedFile.uri,
+        name: uploadedFile.name,
+        type: "audio/mpeg",
+      } as any);
+
+      console.log("Uploading file:", uploadedFile.name);
+
+      const response = await axios.post(`${API_URL}/getReciter`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 30000,
+      });
+
+      console.log("Server response:", JSON.stringify(response.data, null, 2));
+      setUploadedFile(null);
+    } catch (err: any) {
+      console.log("Upload error:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   async function startRecording() {
     try {
@@ -350,14 +395,13 @@ export default function Index() {
         >
           {!uploadedFile && (
             <>
-              <Text style={fileUploadStyles.heading}>Choose a file</Text>
               <Image
                 source={icons.upload}
                 tintColor={colors.green}
                 style={fileUploadStyles.icon}
               />
               <Text style={fileUploadStyles.text}>
-                PNG, SVG, PDF, GIF or JPG (max of 25mb)
+                Select an audio file (MP3, WAV)
               </Text>
             </>
           )}
@@ -369,7 +413,9 @@ export default function Index() {
                 style={fileUploadStyles.icon}
               />
               <View style={fileUploadStyles.inner}>
-                <Text style={fileUploadStyles.fileText}>Sudais.mp3</Text>
+                <Text style={fileUploadStyles.fileText}>
+                  {uploadedFile.name}
+                </Text>
                 <Pressable onPress={deleteUploadedFile}>
                   <Image
                     source={icons.delete}
@@ -381,8 +427,18 @@ export default function Index() {
             </>
           )}
           <View style={fileUploadStyles.buttonContainer}>
-            <Pressable style={fileUploadStyles.button}>
-              <Text style={fileUploadStyles.buttonText}>Upload</Text>
+            <Pressable
+              style={[fileUploadStyles.button]}
+              onPress={uploadedFile ? handleFileUpload : handleUploadedFile}
+              disabled={isUploading}
+            >
+              <Text style={fileUploadStyles.buttonText}>
+                {isUploading
+                  ? "Uploading..."
+                  : uploadedFile
+                    ? "Upload"
+                    : "Choose File"}
+              </Text>
             </Pressable>
           </View>
         </Pressable>
