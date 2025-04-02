@@ -127,7 +127,7 @@ export function Recorder({
         />
       </Pressable>
       {!recording && (
-        <Text style={styles.heading}>Press to start recording</Text>
+        <Text style={styles.heading}>Tap to record recitation</Text>
       )}
     </View>
   );

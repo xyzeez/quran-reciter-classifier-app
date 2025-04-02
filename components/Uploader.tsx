@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.green,
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: "Poppins_400Regular",
     color: colors.white,
   },
@@ -147,7 +147,7 @@ export function Uploader({
             tintColor={colors.green}
             style={styles.icon}
           />
-          <Text style={styles.text}>Select an audio file (MP3, WAV)</Text>
+          <Text style={styles.text}>Select a Quran audio file (MP3, WAV)</Text>
         </>
       )}
       {uploadedFile && (
@@ -177,10 +177,10 @@ export function Uploader({
         >
           <Text style={styles.buttonText}>
             {isUploading
-              ? "Uploading..."
+              ? "Processing..."
               : uploadedFile
-                ? "Upload"
-                : "Choose File"}
+                ? "Identify Reciter"
+                : "Choose Audio File"}
           </Text>
         </Pressable>
       </View>

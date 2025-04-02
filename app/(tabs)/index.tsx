@@ -55,8 +55,10 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Upload a File</Text>
-      <Text style={styles.text}>Edit app/index.tsx to edit this screen.</Text>
+      <Text style={styles.heading}>Identify the Qari</Text>
+      <Text style={styles.text}>
+        Record or upload an audio file to identify the reciter
+      </Text>
       <Toggle
         fileInputType={fileInputType}
         setFileInputType={setFileInputType}
