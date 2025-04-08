@@ -1,9 +1,15 @@
 import { colors } from "@/constants/colors";
 import * as DocumentPicker from "expo-document-picker";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { UploaderProps, AudioFile } from "@/types/audio";
+import { UploaderProps } from "@/types/audio";
 
 const styles = StyleSheet.create({
   container: {
@@ -146,13 +152,13 @@ export function Uploader({
           onPress={uploadedFile ? handleFileUpload : handleUploadedFile}
           disabled={isUploading}
         >
-          <Text style={styles.buttonText}>
-            {isUploading
-              ? "Processing..."
-              : uploadedFile
-                ? "Identify Reciter"
-                : "Choose Audio File"}
-          </Text>
+          {isUploading ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            <Text style={styles.buttonText}>
+              {uploadedFile ? "Identify Reciter" : "Choose Audio File"}
+            </Text>
+          )}
         </Pressable>
       </View>
     </Pressable>

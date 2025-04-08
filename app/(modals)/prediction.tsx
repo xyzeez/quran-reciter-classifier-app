@@ -4,6 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,11 +13,21 @@ import ReciterPredicted from "@/components/ReciterPredicted";
 import recitersData from "@/constants/reciters.json";
 import { Reciter } from "@/types/reciter";
 import TopPrediction from "@/components/TopPrediction";
+import { useEffect, useState } from "react";
+import { reciterService } from "@/services/reciterService";
+import { useRoute } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 
 // Demo data
 const mainPrediction: Reciter = recitersData.reciters[0];
 
 const topPredictions: Reciter[] = recitersData.reciters.slice(1, 6);
+
+// Define a type for the route params
+type PredictionRouteProp = RouteProp<
+  { Prediction: { file: string } },
+  "Prediction"
+>;
 
 const styles = StyleSheet.create({
   container: {
@@ -106,11 +117,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.crest,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: "Poppins_400Regular",
+    color: colors.grey,
+  },
 });
 
 export default function PredictionResults() {
   const router = useRouter();
+  const route = useRoute<PredictionRouteProp>();
+  const fileParam = route.params?.file;
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAndLogPredictions = async () => {
+      try {
+        if (fileParam) {
+          const file = JSON.parse(fileParam);
+          console.log("Received file for prediction:", file);
+
+          const response = await reciterService.predictReciter(file);
+          console.log("Prediction response:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching predictions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAndLogPredictions();
+  }, [fileParam]);
+
   const known = true;
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.green} />
+        <Text style={styles.loadingText}>Identifying Reciter...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

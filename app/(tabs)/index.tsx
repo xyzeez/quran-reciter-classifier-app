@@ -1,11 +1,11 @@
 import { colors } from "@/constants/colors";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { Toggle } from "@/components/Toggle";
 import { Recorder } from "@/components/Recorder";
 import { Uploader } from "@/components/Uploader";
-import { reciterService } from "@/services/reciterService";
 import { useRouter } from "expo-router";
+import { Audio } from "expo-av";
 
 const styles = StyleSheet.create({
   container: {
@@ -37,6 +37,7 @@ export default function Index() {
     "record"
   );
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFileProcess = async (file: {
     uri: string;
@@ -44,22 +45,43 @@ export default function Index() {
     type: string;
   }) => {
     try {
-      const response = await reciterService.predictReciter(file);
-      console.log("Server response:", JSON.stringify(response, null, 2));
+      setIsProcessing(true);
+      const { sound, status } = await Audio.Sound.createAsync(
+        { uri: file.uri },
+        { shouldPlay: false }
+      );
+      if (status.isLoaded && status.durationMillis !== undefined) {
+        const duration = status.durationMillis / 1000;
+        console.log(`Original audio duration: ${duration} seconds`);
 
-      // Redirect to prediction results with the response data
-      router.push({
-        pathname: "/(modals)/prediction",
-        params: {
-          predictions: JSON.stringify(response),
-        },
-      });
+        await sound.unloadAsync(); // Unload the sound after checking duration
+
+        if (duration < 5) {
+          alert("Audio file is too short. Minimum length is 5 seconds.");
+          setIsProcessing(false);
+          return;
+        }
+
+        console.log("Proceeding with the original file.");
+
+        router.push({
+          pathname: "/(modals)/prediction",
+          params: {
+            file: JSON.stringify(file),
+          },
+        });
+      } else {
+        console.error("Failed to load audio file or duration is undefined.");
+        await sound.unloadAsync(); // Attempt to unload even if status is bad
+      }
     } catch (error: any) {
       console.error("Error processing file:", {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -79,6 +101,7 @@ export default function Index() {
       {fileInputType === "upload" && (
         <Uploader onFileUpload={handleFileProcess} />
       )}
+      {isProcessing && <ActivityIndicator size="large" color={colors.green} />}
     </View>
   );
 }
