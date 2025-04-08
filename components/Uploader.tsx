@@ -3,6 +3,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { UploaderProps, AudioFile } from "@/types/audio";
 
 const styles = StyleSheet.create({
   container: {
@@ -63,15 +64,6 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 });
-
-interface UploaderProps {
-  onFileUpload: (file: {
-    uri: string;
-    name: string;
-    type: string;
-  }) => Promise<void>;
-  acceptedFileTypes?: string[];
-}
 
 export function Uploader({
   onFileUpload,

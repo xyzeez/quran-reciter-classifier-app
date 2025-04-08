@@ -3,6 +3,7 @@ import { Audio } from "expo-av";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { RecorderProps } from "@/types/audio";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,15 +31,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
 });
-
-interface RecorderProps {
-  onRecordingComplete?: (file: {
-    uri: string;
-    name: string;
-    type: string;
-  }) => Promise<void>;
-  recordingOptions?: Partial<Audio.RecordingOptions>;
-}
 
 export function Recorder({
   onRecordingComplete,

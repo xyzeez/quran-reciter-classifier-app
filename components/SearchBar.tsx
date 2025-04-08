@@ -1,12 +1,7 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-
-interface SearchBarProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-}
+import { SearchBarProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {

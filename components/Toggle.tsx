@@ -1,5 +1,6 @@
 import { colors } from "@/constants/colors";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ToggleProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -58,11 +59,6 @@ const styles = StyleSheet.create({
     color: colors.green,
   },
 });
-
-interface ToggleProps {
-  fileInputType: "record" | "upload";
-  setFileInputType: (type: "record" | "upload") => void;
-}
 
 export function Toggle({ fileInputType, setFileInputType }: ToggleProps) {
   return (
