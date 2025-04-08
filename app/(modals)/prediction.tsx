@@ -136,9 +136,12 @@ export default function PredictionResults() {
   const route = useRoute<PredictionRouteProp>();
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAndLogPredictions = async () => {
+      setPredictionError(null);
+      setIsLoading(true);
       try {
         if (fileParam) {
           const file = JSON.parse(fileParam);
@@ -147,8 +150,21 @@ export default function PredictionResults() {
           const response = await reciterService.predictReciter(file);
           console.log("Prediction response:", response);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching predictions:", error);
+
+        let errorMessage = "Failed to identify reciter. Please try again.";
+        if (
+          error.code === "ECONNABORTED" ||
+          (error.message && error.message.toLowerCase().includes("timeout"))
+        ) {
+          errorMessage =
+            "Request timed out. Please check your connection and try again.";
+        } else if (error.message) {
+          errorMessage = `Failed to identify reciter: ${error.message}. Please try again.`;
+        }
+
+        setPredictionError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -157,13 +173,28 @@ export default function PredictionResults() {
     fetchAndLogPredictions();
   }, [fileParam]);
 
-  const known = true;
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.green} />
         <Text style={styles.loadingText}>Identifying Reciter...</Text>
+      </View>
+    );
+  }
+
+  if (predictionError) {
+    return (
+      <View style={styles.unknownContainer}>
+        <Ionicons name="alert-circle-outline" size={60} color={colors.red} />
+        <Text style={styles.unknownTitle}>Error</Text>
+        <Text style={styles.unknownDescription}>{predictionError}</Text>
+        <TouchableOpacity
+          style={styles.tryAgainButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={20} color={colors.white} />
+          <Text style={styles.tryAgainText}>Go Back</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -183,7 +214,7 @@ export default function PredictionResults() {
           ),
         }}
       />
-      {known ? (
+      {true ? (
         <ScrollView>
           <ReciterPredicted reciter={mainPrediction} />
           <View style={styles.sectionContainer}>
