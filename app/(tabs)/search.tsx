@@ -84,14 +84,7 @@ const Search = () => {
         <View style={styles.reciterList}>
           {filteredReciters.length > 0 ? (
             filteredReciters.map((reciter) => (
-              <ReciterCard
-                key={reciter.id}
-                name={reciter.name}
-                nationality={reciter.nationality}
-                flagUrl={reciter.flagUrl}
-                recordings={reciter.recordings}
-                imageUrl={reciter.imageUrl}
-              />
+              <ReciterCard key={reciter.id} {...reciter} />
             ))
           ) : (
             <Text style={styles.noResults}>No reciters found</Text>

@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
+    gap: 12,
     shadowColor: colors.black,
     shadowOffset: {
       width: 0,
@@ -21,22 +22,13 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  imageContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    overflow: "hidden",
-    backgroundColor: colors.greyLight,
-    borderWidth: 1,
-    borderColor: colors.greenLight,
-  },
   image: {
-    width: "100%",
-    height: "100%",
+    width: 45,
+    height: 45,
+    borderRadius: 9999,
   },
   infoContainer: {
     flex: 1,
-    marginLeft: 12,
     justifyContent: "center",
   },
   name: {
@@ -56,8 +48,7 @@ const styles = StyleSheet.create({
   },
   flag: {
     width: 16,
-    height: 16,
-    borderRadius: 8,
+    height: 12,
     marginRight: 6,
   },
   nationality: {
@@ -79,27 +70,41 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_500Medium",
     color: colors.green,
   },
+  confidence: {
+    width: 45,
+    height: 45,
+    backgroundColor: colors.greenLight,
+    borderRadius: 9999,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.green,
+  },
+  confidenceText: {
+    fontSize: 12,
+    fontFamily: "Poppins_600SemiBold",
+    color: colors.green,
+    marginTop: 4,
+  },
 });
 
-export function ReciterCard({
+const TopPrediction = ({
   name,
   nationality,
   flagUrl,
-  recordings,
+  confidence,
   imageUrl,
   onPress,
-}: ReciterCardProps) {
+}: ReciterCardProps) => {
   return (
     <Pressable style={styles.container} onPress={onPress}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: imageUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+      <Image
+        source={{ uri: imageUrl }}
+        style={styles.image}
+        resizeMode="cover"
+      />
       <View style={styles.infoContainer}>
-        <Text style={styles.name} numberOfLines={2} ellipsizeMode="tail">
+        <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
           {name}
         </Text>
         <View style={styles.bottomRow}>
@@ -113,12 +118,15 @@ export function ReciterCard({
           </View>
           <View style={styles.recordingsContainer}>
             <Ionicons name="play" size={14} color={colors.green} />
-            <Text style={styles.recordingsCount}>
-              {recordings.toLocaleString()}
-            </Text>
+            <Text style={styles.recordingsCount}>Listen</Text>
           </View>
         </View>
       </View>
+      <View style={styles.confidence}>
+        <Text style={styles.confidenceText}>{confidence}%</Text>
+      </View>
     </Pressable>
   );
-}
+};
+
+export default TopPrediction;

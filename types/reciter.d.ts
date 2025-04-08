@@ -1,16 +1,13 @@
 export interface Reciter {
+  id: string;
   name: string;
   confidence: number;
-  country: string;
-  flagUrl: string;
-  imageUrl: string;
-}
-
-export interface ReciterCardProps {
-  name: string;
   nationality: string;
   flagUrl: string;
-  recordings: number;
   imageUrl: string;
+  recordings: number;
+}
+
+export interface ReciterCardProps extends Reciter {
   onPress?: () => void;
 }

@@ -5,6 +5,7 @@ import { Toggle } from "@/components/Toggle";
 import { Recorder } from "@/components/Recorder";
 import { Uploader } from "@/components/Uploader";
 import { reciterService } from "@/services/reciterService";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
@@ -35,6 +36,7 @@ export default function Index() {
   const [fileInputType, setFileInputType] = useState<"record" | "upload">(
     "record"
   );
+  const router = useRouter();
 
   const handleFileProcess = async (file: {
     uri: string;
@@ -44,6 +46,14 @@ export default function Index() {
     try {
       const response = await reciterService.predictReciter(file);
       console.log("Server response:", JSON.stringify(response, null, 2));
+
+      // Redirect to prediction results with the response data
+      router.push({
+        pathname: "/(modals)/prediction",
+        params: {
+          predictions: JSON.stringify(response),
+        },
+      });
     } catch (error: any) {
       console.error("Error processing file:", {
         message: error.message,
