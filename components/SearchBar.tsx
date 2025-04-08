@@ -6,13 +6,13 @@ import { SearchBarProps } from "@/types/ui";
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 9999,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginTop: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    borderWidth: 1,
+    borderColor: colors.green,
   },
   input: {
     flex: 1,

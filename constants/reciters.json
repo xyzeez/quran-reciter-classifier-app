@@ -1,0 +1,104 @@
+{
+  "reciters": [
+    {
+      "id": "1",
+      "name": "Abdul Rahman Al-Sudais",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 1250,
+      "confidence": 91
+    },
+    {
+      "id": "2",
+      "name": "Maher Al-Muaiqly",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 980,
+      "confidence": 83
+    },
+    {
+      "id": "3",
+      "name": "Mishary bin Rashid Alafasy",
+      "nationality": "Kuwait",
+      "country": "KW",
+      "flagUrl": "https://flagcdn.com/w40/kw.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 1500,
+      "confidence": 78
+    },
+    {
+      "id": "4",
+      "name": "Abdur-Rahman Al-Ossi",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 750,
+      "confidence": 76
+    },
+    {
+      "id": "5",
+      "name": "Saad Al-Ghamdi",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 1200,
+      "confidence": 72
+    },
+    {
+      "id": "6",
+      "name": "Abdullah Basfar",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 850,
+      "confidence": 68
+    },
+    {
+      "id": "7",
+      "name": "Yasser Al-Dosari",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 1100,
+      "confidence": 65
+    },
+    {
+      "id": "8",
+      "name": "Fares Abbad",
+      "nationality": "Saudi Arabia",
+      "country": "SA",
+      "flagUrl": "https://flagcdn.com/w40/sa.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 900,
+      "confidence": 62
+    },
+    {
+      "id": "9",
+      "name": "Hani Ar-Rifai",
+      "nationality": "Egypt",
+      "country": "EG",
+      "flagUrl": "https://flagcdn.com/w40/eg.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 1300,
+      "confidence": 58
+    },
+    {
+      "id": "10",
+      "name": "Mahmoud Khalil Al-Hussary",
+      "nationality": "Egypt",
+      "country": "EG",
+      "flagUrl": "https://flagcdn.com/w40/eg.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+      "recordings": 2000,
+      "confidence": 55
+    }
+  ]
+}
