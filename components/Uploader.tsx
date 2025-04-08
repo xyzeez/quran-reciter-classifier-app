@@ -1,8 +1,8 @@
 import { colors } from "@/constants/colors";
-import { icons } from "@/constants/icons";
 import * as DocumentPicker from "expo-document-picker";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const styles = StyleSheet.create({
   container: {
@@ -24,11 +24,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_400Regular",
     color: colors.black,
     textAlign: "center",
-  },
-  icon: {
-    width: 100,
-    height: 100,
-    marginBottom: 16,
   },
   inner: {
     flexDirection: "row",
@@ -53,10 +48,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     bottom: -24,
     insetInline: 0,
-  },
-  deleteIcon: {
-    width: 24,
-    height: 24,
   },
   button: {
     alignItems: "center",
@@ -142,29 +133,17 @@ export function Uploader({
     <Pressable onPress={handleUploadedFile} style={styles.container}>
       {!uploadedFile && (
         <>
-          <Image
-            source={icons.upload}
-            tintColor={colors.green}
-            style={styles.icon}
-          />
+          <Ionicons name="cloud-upload" size={100} color={colors.green} />
           <Text style={styles.text}>Select a Quran audio file (MP3, WAV)</Text>
         </>
       )}
       {uploadedFile && (
         <>
-          <Image
-            source={icons.uploaded}
-            tintColor={colors.green}
-            style={styles.icon}
-          />
+          <Ionicons name="cloud-done" size={100} color={colors.green} />
           <View style={styles.inner}>
             <Text style={styles.fileText}>{uploadedFile.name}</Text>
             <Pressable onPress={deleteUploadedFile}>
-              <Image
-                source={icons.delete}
-                tintColor={colors.red}
-                style={styles.deleteIcon}
-              />
+              <Ionicons name="close-circle" size={24} color={colors.red} />
             </Pressable>
           </View>
         </>

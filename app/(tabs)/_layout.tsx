@@ -1,7 +1,7 @@
 import { colors } from "@/constants/colors";
-import { icons } from "@/constants/icons";
 import { Tabs } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const tabStyles = StyleSheet.create({
   container: {
@@ -44,13 +44,21 @@ const tabStyles = StyleSheet.create({
   },
 });
 
-const TabIcon = ({ focused, title, icon }: any) => {
+const TabIcon = ({
+  focused,
+  title,
+  iconName,
+}: {
+  focused: boolean;
+  title: string;
+  iconName: keyof typeof Ionicons.glyphMap;
+}) => {
   return (
     <View style={focused ? tabStyles.active : tabStyles.default}>
-      <Image
-        source={icon}
-        tintColor={focused ? colors.white : colors.green}
-        style={focused ? tabStyles.iconActive : tabStyles.icon}
+      <Ionicons
+        name={iconName}
+        size={focused ? 18 : 24}
+        color={focused ? colors.white : colors.green}
       />
       {focused && <Text style={tabStyles.text}>{title}</Text>}
     </View>
@@ -71,7 +79,7 @@ const TabsLayout = () => {
           title: "Qari",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} title="Qari" icon={icons.qari} />
+            <TabIcon focused={focused} title="Qari" iconName="mic" />
           ),
         }}
       />
@@ -81,7 +89,7 @@ const TabsLayout = () => {
           title: "Ayah",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} title="Ayah" icon={icons.ayah} />
+            <TabIcon focused={focused} title="Ayah" iconName="musical-notes" />
           ),
         }}
       />
@@ -91,7 +99,7 @@ const TabsLayout = () => {
           title: "Search",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} title="Search" icon={icons.search} />
+            <TabIcon focused={focused} title="Search" iconName="search" />
           ),
         }}
       />

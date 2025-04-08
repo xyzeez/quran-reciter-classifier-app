@@ -1,8 +1,8 @@
 import { colors } from "@/constants/colors";
-import { icons } from "@/constants/icons";
 import { Audio } from "expo-av";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const styles = StyleSheet.create({
   container: {
@@ -28,10 +28,6 @@ const styles = StyleSheet.create({
     borderColor: colors.green,
     borderRadius: 9999,
     backgroundColor: colors.white,
-  },
-  icon: {
-    width: 100,
-    height: 100,
   },
 });
 
@@ -120,10 +116,10 @@ export function Recorder({
         onPress={recording ? stopRecording : startRecording}
         style={styles.button}
       >
-        <Image
-          source={recording ? icons.stop : icons.play}
-          tintColor={colors.green}
-          style={styles.icon}
+        <Ionicons
+          name={recording ? "stop" : "play"}
+          size={100}
+          color={colors.green}
         />
       </Pressable>
       {!recording && (
