@@ -35,8 +35,13 @@ const Ayah = () => {
     type: string;
   }) => {
     try {
+      console.log("Received file for Ayah prediction:", file);
+      // Pause the fetch API call
+      /*
       const response = await reciterService.predictAyah(file);
       console.log("Server response:", JSON.stringify(response, null, 2));
+      */
+      console.log("Ayah prediction API call is paused.");
     } catch (error: any) {
       console.error("Error processing file:", {
         message: error.message,
