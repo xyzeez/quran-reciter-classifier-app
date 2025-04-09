@@ -1,7 +1,7 @@
 import { colors } from "@/constants/colors";
 import { StyleSheet, Text, View } from "react-native";
 import { Recorder } from "@/components/Recorder";
-import { reciterService } from "@/services/reciterService";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +29,8 @@ const styles = StyleSheet.create({
 });
 
 const Ayah = () => {
+  const router = useRouter();
+
   const handleFileProcess = async (file: {
     uri: string;
     name: string;
@@ -36,14 +38,12 @@ const Ayah = () => {
   }) => {
     try {
       console.log("Received file for Ayah prediction:", file);
-      // Pause the fetch API call
-      /*
-      const response = await reciterService.predictAyah(file);
-      console.log("Server response:", JSON.stringify(response, null, 2));
-      */
-      console.log("Ayah prediction API call is paused.");
+      router.push({
+        pathname: "/(modals)/ayah-prediction",
+        params: { file: JSON.stringify(file) },
+      });
     } catch (error: any) {
-      console.error("Error processing file:", {
+      console.error("Error processing file for Ayah screen:", {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,

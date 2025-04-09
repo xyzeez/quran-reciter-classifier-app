@@ -4,18 +4,28 @@ import {
   Poppins_500Medium,
   Poppins_600SemiBold,
   Poppins_700Bold,
-  useFonts,
+  useFonts as usePoppinsFonts,
 } from "@expo-google-fonts/poppins";
+import {
+  Amiri_400Regular,
+  Amiri_700Bold,
+  useFonts as useAmiriFonts,
+} from "@expo-google-fonts/amiri";
 
 const RootLayout = () => {
-  let [fontsLoaded] = useFonts({
+  let [poppinsFontsLoaded] = usePoppinsFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
 
-  if (!fontsLoaded) {
+  let [amiriFontsLoaded] = useAmiriFonts({
+    Amiri_400Regular,
+    Amiri_700Bold,
+  });
+
+  if (!poppinsFontsLoaded || !amiriFontsLoaded) {
     return null;
   }
 
