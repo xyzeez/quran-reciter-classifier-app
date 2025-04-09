@@ -11,6 +11,7 @@ import {
   Amiri_700Bold,
   useFonts as useAmiriFonts,
 } from "@expo-google-fonts/amiri";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootLayout = () => {
   let [poppinsFontsLoaded] = usePoppinsFonts({
@@ -30,10 +31,12 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(modals)" options={{ headerShown: false }} />
-    </Stack>
+    <SafeAreaProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(modals)" options={{ headerShown: false }} />
+      </Stack>
+    </SafeAreaProvider>
   );
 };
 
