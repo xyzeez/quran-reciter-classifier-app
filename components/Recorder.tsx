@@ -1,7 +1,7 @@
 import { colors } from "@/constants/colors";
 import { Audio } from "expo-av";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
+import { Pressable, StyleSheet, Text, View, Animated } from "react-native";
+import { useState, useEffect, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { RecorderProps } from "@/types/audio";
 
@@ -20,6 +20,13 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
   },
+  buttonContainer: {
+    position: "relative",
+    width: 200,
+    height: 200,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   button: {
     alignItems: "center",
     justifyContent: "center",
@@ -29,6 +36,15 @@ const styles = StyleSheet.create({
     borderColor: colors.green,
     borderRadius: 9999,
     backgroundColor: colors.white,
+    zIndex: 1,
+  },
+  pulse: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    borderRadius: 9999,
+    backgroundColor: colors.green + "50",
+    zIndex: 0,
   },
 });
 
@@ -38,6 +54,41 @@ export function Recorder({
 }: RecorderProps) {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    let animation: Animated.CompositeAnimation | null = null;
+
+    if (recording) {
+      animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.3,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      animation.start();
+    } else {
+      if (animation) {
+        animation.stop();
+      }
+      pulseAnim.setValue(1);
+    }
+
+    return () => {
+      if (animation) {
+        animation.stop();
+      }
+      pulseAnim.setValue(1);
+    };
+  }, [recording, pulseAnim]);
 
   async function startRecording() {
     try {
@@ -104,16 +155,28 @@ export function Recorder({
 
   return (
     <View style={styles.container}>
-      <Pressable
-        onPress={recording ? stopRecording : startRecording}
-        style={styles.button}
-      >
-        <Ionicons
-          name={recording ? "stop" : "play"}
-          size={100}
-          color={colors.green}
-        />
-      </Pressable>
+      <View style={styles.buttonContainer}>
+        {recording && (
+          <Animated.View
+            style={[
+              styles.pulse,
+              {
+                transform: [{ scale: pulseAnim }],
+              },
+            ]}
+          />
+        )}
+        <Pressable
+          onPress={recording ? stopRecording : startRecording}
+          style={styles.button}
+        >
+          <Ionicons
+            name={recording ? "stop" : "play"}
+            size={100}
+            color={colors.green}
+          />
+        </Pressable>
+      </View>
       {!recording && (
         <Text style={styles.heading}>Tap to record recitation</Text>
       )}
