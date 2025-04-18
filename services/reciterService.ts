@@ -1,26 +1,6 @@
 import axios from "axios";
 import { API_URL } from "@/configs";
-import { Reciter } from "@/types/reciter";
-
-interface ReciterPrediction {
-  reliable: boolean;
-  main_prediction?: {
-    name: string;
-    confidence: number;
-    nationality: string;
-    flagUrl: string;
-    imageUrl: string;
-    serverUrl: string;
-  };
-  top_predictions?: {
-    name: string;
-    confidence: number;
-    nationality: string;
-    flagUrl: string;
-    imageUrl: string;
-    serverUrl: string;
-  }[];
-}
+import { ReciterPrediction } from "@/types/predictions";
 
 export const reciterService = {
   async predictReciter(audioFile: {
