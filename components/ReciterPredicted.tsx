@@ -1,5 +1,5 @@
 import { colors } from "@/constants/colors";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { Reciter } from "@/types/reciter";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   flag: {
     width: 24,
@@ -99,17 +99,9 @@ const ReciterPredicted = ({ reciter }: { reciter: Reciter }) => {
             <Text style={styles.recordingsCount}>{reciter.nationality}</Text>
           </View>
           <View style={styles.recordingsContainer}>
-            <Ionicons name="musical-notes" size={14} color={colors.green} />
-            <Text style={styles.recordingsCount}>
-              {reciter.recordings.toLocaleString()}
-            </Text>
+            <Ionicons name="play" size={14} color={colors.green} />
+            <Text style={styles.recordingsCount}>Listen</Text>
           </View>
-          <TouchableOpacity>
-            <View style={styles.recordingsContainer}>
-              <Ionicons name="play" size={14} color={colors.green} />
-              <Text style={styles.recordingsCount}>Listen</Text>
-            </View>
-          </TouchableOpacity>
         </View>
       </View>
     </View>

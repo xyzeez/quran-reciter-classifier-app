@@ -1,5 +1,5 @@
 import { colors } from "@/constants/colors";
-import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ReciterCardProps } from "@/types/reciter";
 
@@ -94,10 +94,9 @@ const TopPrediction = ({
   flagUrl,
   confidence,
   imageUrl,
-  onPress,
 }: ReciterCardProps) => {
   return (
-    <Pressable style={styles.container} onPress={onPress}>
+    <View style={styles.container}>
       <Image
         source={{ uri: imageUrl }}
         style={styles.image}
@@ -125,7 +124,7 @@ const TopPrediction = ({
       <View style={styles.confidence}>
         <Text style={styles.confidenceText}>{confidence}%</Text>
       </View>
-    </Pressable>
+    </View>
   );
 };
 
