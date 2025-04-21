@@ -1,10 +1,11 @@
 import { colors } from "@/constants/colors";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ReciterCard } from "@/components/ReciterCard";
 import { SearchHeader } from "@/components/SearchHeader";
-import recitersData from "@/constants/reciters.json";
+import { reciterService } from "@/services/reciterService";
+import { Reciter } from "@/types/reciter";
 
 const styles = StyleSheet.create({
   container: {
@@ -50,19 +51,26 @@ const styles = StyleSheet.create({
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [reciters, setReciters] = useState<Reciter[]>([]);
+
+  useEffect(() => {
+    // Get reciters data from service
+    const fetchedReciters = reciterService.getAllReciters();
+    setReciters(fetchedReciters);
+  }, []);
 
   const filteredReciters = useMemo(() => {
     if (!searchQuery.trim()) {
-      return recitersData.reciters;
+      return reciters;
     }
 
     const query = searchQuery.toLowerCase().trim();
-    return recitersData.reciters.filter(
+    return reciters.filter(
       (reciter) =>
         reciter.name.toLowerCase().includes(query) ||
         reciter.nationality.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, reciters]);
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);

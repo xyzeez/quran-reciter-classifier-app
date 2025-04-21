@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: 0,
   },
   unknownIcon: {
     width: 120,
@@ -122,6 +122,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins_400Regular",
     color: colors.grey,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
   },
   errorIconContainer: {
     width: 80,
@@ -186,7 +192,7 @@ export default function PredictionResults() {
   } | null>(null);
 
   useEffect(() => {
-    const fetchAndLogPredictions = async () => {
+    const fetchPredictions = async () => {
       setPredictionError(null);
       setIsLoading(true);
       try {
@@ -207,7 +213,7 @@ export default function PredictionResults() {
               reliable: true,
               mainPrediction: {
                 name: response.main_prediction.name,
-                confidence: Math.floor(response.main_prediction.confidence),
+                confidence: response.main_prediction.confidence,
                 nationality: response.main_prediction.nationality,
                 flagUrl: response.main_prediction.flagUrl,
                 imageUrl: response.main_prediction.imageUrl,
@@ -215,7 +221,7 @@ export default function PredictionResults() {
               },
               topPredictions: response.top_predictions?.map((pred) => ({
                 name: pred.name,
-                confidence: Math.floor(pred.confidence),
+                confidence: pred.confidence,
                 nationality: pred.nationality,
                 flagUrl: pred.flagUrl,
                 imageUrl: pred.imageUrl,
@@ -227,7 +233,7 @@ export default function PredictionResults() {
               reliable: false,
               topPredictions: response.top_predictions?.map((pred) => ({
                 name: pred.name,
-                confidence: Math.floor(pred.confidence),
+                confidence: pred.confidence,
                 nationality: pred.nationality,
                 flagUrl: pred.flagUrl,
                 imageUrl: pred.imageUrl,
@@ -239,170 +245,60 @@ export default function PredictionResults() {
       } catch (error: any) {
         console.error("Error fetching predictions:", error);
 
-        let errorMessage =
-          "We're having trouble processing your audio. Please try again.";
-        let errorTitle = "Oops!";
-        let errorSubtitle = "Something went wrong";
-        let errorIcon:
-          | "alert-circle-outline"
-          | "musical-notes-outline"
-          | "time-outline"
-          | "wifi-outline"
-          | "globe-outline" = "alert-circle-outline";
-        let errorColor = colors.red;
-
-        if (error.response?.data?.error) {
-          const apiError = error.response.data.error.toLowerCase();
-
-          if (
-            apiError.includes("no librosa") ||
-            apiError.includes("processing audio")
-          ) {
-            errorTitle = "Audio Processing Error";
-            errorSubtitle = "We couldn't process this audio file";
-            errorMessage =
-              "The audio file might be corrupted or in an unsupported format. Please try:\n\n• Using a different audio file\n• Making sure the file is not corrupted\n• Using a supported audio format (MP3, WAV)";
-            errorIcon = "musical-notes-outline";
-            errorColor = colors.red;
-          } else if (
-            apiError.includes("timeout") ||
-            apiError.includes("timed out")
-          ) {
-            errorTitle = "Request Timeout";
-            errorSubtitle = "The request took too long";
-            errorMessage =
-              "This might be due to:\n\n• Slow internet connection\n• Server is busy\n\nPlease check your connection and try again.";
-            errorIcon = "time-outline";
-            errorColor = colors.red;
-          } else {
-            errorTitle = "Server Error";
-            errorSubtitle = "We're having some issues";
-            errorMessage =
-              "Our team has been notified. Please try again in a few minutes.";
-            errorIcon = "alert-circle-outline";
-            errorColor = colors.red;
-          }
-        } else if (
-          error.code === "ECONNABORTED" ||
-          (error.message && error.message.toLowerCase().includes("timeout"))
-        ) {
-          errorTitle = "Connection Timeout";
-          errorSubtitle = "Request took too long";
-          errorMessage =
-            "This might be due to:\n\n• Slow internet connection\n• Server is busy\n\nPlease check your connection and try again.";
-          errorIcon = "wifi-outline";
-          errorColor = colors.red;
-        } else if (error.message?.toLowerCase().includes("network")) {
-          errorTitle = "Network Error";
-          errorSubtitle = "Connection problem";
-          errorMessage =
-            "Please check:\n\n• Your internet connection\n• If you're connected to WiFi or mobile data\n• Try again in a few moments";
-          errorIcon = "globe-outline";
-          errorColor = colors.red;
-        }
-
-        setPredictionError(errorMessage);
+        // Set error state
         setPrediction({
           reliable: false,
-          errorTitle,
-          errorSubtitle,
-          errorIcon,
-          errorColor,
+          errorTitle: "Connection Error",
+          errorSubtitle: "We couldn't process your recording",
+          errorIcon: "wifi-outline",
         });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchAndLogPredictions();
+    fetchPredictions();
   }, [fileParam]);
 
   if (isLoading) {
     return (
-      <View
-        style={[styles.loadingContainer, { backgroundColor: colors.crest }]}
-      >
-        <ActivityIndicator size="large" color={colors.green} />
-        <Text style={styles.loadingText}>Identifying Reciter...</Text>
-      </View>
-    );
-  }
-
-  if (predictionError) {
-    return (
-      <View
-        style={[styles.unknownContainer, { backgroundColor: colors.crest }]}
-      >
-        <View
-          style={[styles.errorIconContainer, { backgroundColor: colors.white }]}
-        >
-          <Ionicons
-            name={prediction?.errorIcon || "alert-circle-outline"}
-            size={40}
-            color={colors.red}
-          />
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={colors.green} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Reciter Prediction</Text>
         </View>
-        <Text style={[styles.errorTitle, { color: colors.red }]}>
-          {prediction?.errorTitle || "Error"}
-        </Text>
-        <Text style={styles.errorSubtitle}>
-          {prediction?.errorSubtitle || "Something went wrong"}
-        </Text>
-        <Text style={styles.errorDescription}>{predictionError}</Text>
-        <TouchableOpacity
-          style={[styles.tryAgainButton, { backgroundColor: colors.red }]}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={20} color={colors.white} />
-          <Text style={styles.tryAgainText}>Try Again</Text>
-        </TouchableOpacity>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.green} />
+          <Text style={styles.loadingText}>Analyzing audio...</Text>
+        </View>
       </View>
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          header: () => (
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={24} color={colors.green} />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>Prediction Results</Text>
-            </View>
-          ),
-        }}
-      />
-      {prediction?.reliable && prediction.mainPrediction ? (
-        <ScrollView>
-          <ReciterPredicted reciter={prediction.mainPrediction} />
-          {prediction.topPredictions &&
-            prediction.topPredictions.length > 0 && (
-              <>
-                <View style={styles.sectionContainer}>
-                  <Text style={styles.sectionTitle}>Top Predictions</Text>
-                  <View style={styles.separator} />
-                </View>
-                <View style={styles.reciterList}>
-                  {prediction.topPredictions.map((reciter, index) => (
-                    <TopPrediction key={index} {...reciter} />
-                  ))}
-                </View>
-              </>
-            )}
-          <View style={styles.footer}></View>
-        </ScrollView>
-      ) : (
-        <View style={styles.unknownContainer}>
-          <View style={styles.unknownIcon}>
-            <Ionicons name="person-outline" size={60} color={colors.green} />
+  if (prediction?.errorTitle) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={colors.green} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Reciter Prediction</Text>
+        </View>
+        <View style={styles.errorContainer}>
+          <View style={styles.errorIconContainer}>
+            <Ionicons
+              name={prediction.errorIcon || "alert-circle-outline"}
+              size={40}
+              color={colors.red}
+            />
           </View>
-          <Text style={styles.unknownTitle}>Reciter Not Recognized</Text>
-          <Text style={styles.unknownDescription}>
-            We couldn't identify the reciter with confidence. The audio might be
-            too short, or the reciter may not be in our database yet.
+          <Text style={styles.errorTitle}>{prediction.errorTitle}</Text>
+          <Text style={styles.errorSubtitle}>{prediction.errorSubtitle}</Text>
+          <Text style={styles.errorDescription}>
+            Please check your internet connection and try again. If the problem
+            persists, the server might be experiencing issues.
           </Text>
           <TouchableOpacity
             style={styles.tryAgainButton}
@@ -412,7 +308,65 @@ export default function PredictionResults() {
             <Text style={styles.tryAgainText}>Try Again</Text>
           </TouchableOpacity>
         </View>
-      )}
+      </View>
+    );
+  }
+
+  if (!prediction?.reliable) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={colors.green} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Reciter Prediction</Text>
+        </View>
+        <View style={styles.unknownContainer}>
+          <View style={styles.unknownIcon}>
+            <Ionicons name="person-outline" size={60} color={colors.green} />
+          </View>
+          <Text style={styles.unknownTitle}>Reciter Not Identified</Text>
+          <Text style={styles.unknownDescription}>
+            We couldn't identify the reciter with confidence. The audio might be
+            unclear or the reciter may not be in our database.
+          </Text>
+          <TouchableOpacity
+            style={styles.tryAgainButton}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="refresh" size={20} color={colors.white} />
+            <Text style={styles.tryAgainText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={colors.green} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Reciter Prediction</Text>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {prediction?.mainPrediction && (
+          <ReciterPredicted reciter={prediction.mainPrediction} />
+        )}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>
+            Top {prediction?.topPredictions?.length || 0} Predictions
+          </Text>
+          <View style={styles.separator} />
+        </View>
+        <View style={styles.reciterList}>
+          {prediction?.topPredictions?.map((reciter, index) => (
+            <TopPrediction key={index} {...reciter} />
+          ))}
+        </View>
+        <View style={styles.footer} />
+      </ScrollView>
     </View>
   );
 }

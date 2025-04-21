@@ -14,7 +14,16 @@ import { SurahItem } from "@/components/SurahItem";
 import { useState, useEffect } from "react";
 import { Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRoute } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { ayahService } from "@/services/ayahService";
+
+// Define a type for the route params
+type AyahPredictionRouteProp = RouteProp<
+  { "ayah-prediction": { file: string } },
+  "ayah-prediction"
+>;
 
 const styles = StyleSheet.create({
   container: {
@@ -123,8 +132,12 @@ const styles = StyleSheet.create({
 
 const AyahPrediction = () => {
   const router = useRouter();
+  const route = useRoute<AyahPredictionRouteProp>();
+  const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
   const [isFound, setIsFound] = useState(false);
+  const [matchedAyah, setMatchedAyah] = useState<any>(null);
+  const [similarAyahs, setSimilarAyahs] = useState<any[]>([]);
   const [error, setError] = useState<{
     title: string;
     description: string;
@@ -132,32 +145,41 @@ const AyahPrediction = () => {
   } | null>(null);
 
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setIsLoading(false);
+    const fetchAyahPrediction = async () => {
+      setIsLoading(true);
+      setError(null);
 
-      // Simulate different states randomly
-      const randomState = 0;
+      try {
+        if (fileParam) {
+          const file = JSON.parse(fileParam);
+          console.log("Received file for ayah prediction:", file);
 
-      if (randomState === 0) {
-        // Success state
-        setIsFound(true);
-      } else if (randomState === 1) {
-        // Not found state
-        setIsFound(false);
-      } else {
-        // Error state
+          const result = await ayahService.predictAyah(file);
+
+          if (result.reliable && result.matchedAyah) {
+            setIsFound(true);
+            setMatchedAyah(result.matchedAyah);
+            setSimilarAyahs(result.similarAyahs || []);
+          } else {
+            setIsFound(false);
+            setSimilarAyahs(result.similarAyahs || []);
+          }
+        }
+      } catch (error: any) {
+        console.error("Error processing ayah prediction:", error);
         setError({
           title: "Connection Error",
           description:
             "We couldn't connect to our servers. Please check your internet connection and try again.",
           icon: "wifi-outline",
         });
+      } finally {
+        setIsLoading(false);
       }
-    }, 10000);
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
+    fetchAyahPrediction();
+  }, [fileParam]);
 
   if (isLoading) {
     return (
@@ -227,39 +249,28 @@ const AyahPrediction = () => {
       >
         <View style={styles.contentContainer}>
           <SurahName
-            surahNumberArabic="٢"
-            surahNumberEnglish="2"
-            surahNameArabic={"\uE902"}
+            surahNumberArabic={matchedAyah.surahNumber.toString()}
+            surahNumberEnglish={matchedAyah.surahNumber.toString()}
+            surahNameArabic={matchedAyah.surahName.arabic}
           />
           <SurahContent
-            text="يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓاْ إِذَا تَدَايَنتُم بِدَيۡنٍ إِلَىٰٓ أَجَلٖ مُّسَمّٗى فَٱكۡتُبُوهُۚ وَلۡيَكۡتُب بَّيۡنَكُمۡ كَاتِبُۢ بِٱلۡعَدۡلِۚ وَلَا يَأۡبَ كَاتِبٌ أَن يَكۡتُبَ كَمَا عَلَّمَهُ ٱللَّهُۚ فَلۡيَكۡتُبۡ وَلۡيُمۡلِلِ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ وَلۡيَتَّقِ ٱللَّهَ رَبَّهُۥ وَلَا يَبۡخَسۡ مِنۡهُ شَيۡـٔٗاۚ فَإِن كَانَ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ سَفِيهًا أَوۡ ضَعِيفًا أَوۡ لَا يَسۡتَطِيعُ أَن يُمِلَّ هُوَ فَلۡيُمۡلِلۡ وَلِيُّهُۥ بِٱلۡعَدۡلِۚ وَٱسۡتَشۡهِدُواْ شَهِيدَيۡنِ مِن رِّجَالِكُمۡۖ فَإِن لَّمۡ يَكُونَا رَجُلَيۡنِ فَرَجُلٞ وَٱمۡرَأَتَانِ مِمَّن تَرۡضَوۡنَ مِنَ ٱلشُّهَدَآءِ أَن تَضِلَّ إِحۡدَىٰهُمَا فَتُذَكِّرَ إِحۡدَىٰهُمَا ٱلۡأُخۡرَىٰۚ وَلَا يَأۡبَ ٱلشُّهَدَآءُ إِذَا مَا دُعُواْۚ وَلَا تَسۡـَٔمُوٓاْ أَن تَكۡتُبُوهُ صَغِيرًا أَوۡ كَبِيرًا إِلَىٰٓ أَجَلِهِۦۚ ذَٰلِكُمۡ أَقۡسَطُ عِندَ ٱللَّهِ وَأَقۡوَمُ لِلشَّهَٰدَةِ وَأَدۡنَىٰٓ أَلَّا تَرۡتَابُوٓاْ إِلَّآ أَن تَكُونَ تِجَٰرَةً حَاضِرَةٗ تُدِيرُونَهَا بَيۡنَكُمۡ فَلَيۡسَ عَلَيۡكُمۡ جُنَاحٌ أَلَّا تَكۡتُبُوهَاۗ وَأَشۡهِدُوٓاْ إِذَا تَبَايَعۡتُمۡۚ وَلَا يُضَآرَّ كَاتِبٞ وَلَا شَهِيدٞۚ وَإِن تَفۡعَلُواْ فَإِنَّهُۥ فُسُوقُۢ بِكُمۡۗ وَٱتَّقُواْ ٱللَّهَۖ وَيُعَلِّمُكُمُ ٱللَّهُۗ وَٱللَّهُ بِكُلِّ شَيۡءٍ عَلِيمٞ"
-            ayahNumber="٢"
+            text={matchedAyah.text}
+            ayahNumber={matchedAyah.ayahNumber.arabic}
           />
-        </View>
-        <View style={styles.listContainer}>
-          <ListTitle count={2} />
-          <SurahItem
-            active={true}
-            surahNameArabic="الزلزلة"
-            surahNameEnglish="The Cow"
-            ayahNumberArabic="٢٣"
-            ayahNumberEnglish="98"
-            text="يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓاْ إِذَا تَدَايَنتُم بِدَيۡنٍ إِلَىٰٓ أَجَلٖ مُّسَمّٗى فَٱكۡتُبُوهُۚ وَلۡيَكۡتُب بَّيۡنَكُمۡ كَاتِبُۢ بِٱلۡعَدۡلِۚ وَلَا يَأۡبَ كَاتِبٌ أَن يَكۡتُبَ كَمَا عَلَّمَهُ ٱللَّهُۚ فَلۡيَكۡتُبۡ وَلۡيُمۡلِلِ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ وَلۡيَتَّقِ ٱللَّهَ رَبَّهُۥ وَلَا يَبۡخَسۡ مِنۡهُ شَيۡـٔٗاۚ فَإِن كَانَ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ سَفِيهًا أَوۡ ضَعِيفًا أَوۡ لَا يَسۡتَطِيعُ أَن يُمِلَّ هُوَ فَلۡيُمۡلِلۡ وَلِيُّهُۥ بِٱلۡعَدۡلِۚ وَٱسۡتَشۡهِدُواْ"
-          />
-          <SurahItem
-            surahNameArabic="الزلزلة"
-            surahNameEnglish="The Cow"
-            ayahNumberArabic="٢٣"
-            ayahNumberEnglish="98"
-            text="يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓاْ إِذَا تَدَايَنتُم بِدَيۡنٍ إِلَىٰٓ أَجَلٖ مُّسَمّٗى فَٱكۡتُبُوهُۚ وَلۡيَكۡتُب بَّيۡنَكُمۡ كَاتِبُۢ بِٱلۡعَدۡلِۚ وَلَا يَأۡبَ كَاتِبٌ أَن يَكۡتُبَ كَمَا عَلَّمَهُ ٱللَّهُۚ فَلۡيَكۡتُبۡ وَلۡيُمۡلِلِ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ وَلۡيَتَّقِ ٱللَّهَ رَبَّهُۥ وَلَا يَبۡخَسۡ مِنۡهُ شَيۡـٔٗاۚ فَإِن كَانَ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ سَفِيهًا أَوۡ ضَعِيفًا أَوۡ لَا يَسۡتَطِيعُ أَن يُمِلَّ هُوَ فَلۡيُمۡلِلۡ وَلِيُّهُۥ بِٱلۡعَدۡلِۚ وَٱسۡتَشۡهِدُواْ"
-          />
-          <SurahItem
-            surahNameArabic="الزلزلة"
-            surahNameEnglish="The Cow"
-            ayahNumberArabic="٢٣"
-            ayahNumberEnglish="98"
-            text="يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓاْ إِذَا تَدَايَنتُم بِدَيۡنٍ إِلَىٰٓ أَجَلٖ مُّسَمّٗى فَٱكۡتُبُوهُۚ وَلۡيَكۡتُب بَّيۡنَكُمۡ كَاتِبُۢ بِٱلۡعَدۡلِۚ وَلَا يَأۡبَ كَاتِبٌ أَن يَكۡتُبَ كَمَا عَلَّمَهُ ٱللَّهُۚ فَلۡيَكۡتُبۡ وَلۡيُمۡلِلِ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ وَلۡيَتَّقِ ٱللَّهَ رَبَّهُۥ وَلَا يَبۡخَسۡ مِنۡهُ شَيۡـٔٗاۚ فَإِن كَانَ ٱلَّذِي عَلَيۡهِ ٱلۡحَقُّ سَفِيهًا أَوۡ ضَعِيفًا أَوۡ لَا يَسۡتَطِيعُ أَن يُمِلَّ هُوَ فَلۡيُمۡلِلۡ وَلِيُّهُۥ بِٱلۡعَدۡلِۚ وَٱسۡتَشۡهِدُواْ"
-          />
+
+          <ListTitle title="Matching Ayahs" count={similarAyahs.length} />
+          <View style={styles.listContainer}>
+            {similarAyahs.map((ayah, index) => (
+              <SurahItem
+                key={index}
+                surahNameArabic={ayah.surahName.arabic}
+                surahNameEnglish={ayah.surahName.english}
+                ayahNumberArabic={ayah.ayahNumber.arabic}
+                ayahNumberEnglish={ayah.ayahNumber.english}
+                text={ayah.text}
+              />
+            ))}
+          </View>
         </View>
       </ScrollView>
     </View>

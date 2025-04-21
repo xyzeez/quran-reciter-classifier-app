@@ -32,17 +32,23 @@ const styles = StyleSheet.create({
 });
 
 interface ListTitleProps {
-  count: number;
+  count?: number;
+  title?: string;
 }
 
-export const ListTitle = ({ count }: ListTitleProps) => {
+export const ListTitle = ({
+  count,
+  title = "All Identified Ayahs",
+}: ListTitleProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>All Identified Ayahs</Text>
+      <Text style={styles.text}>{title}</Text>
       <View style={styles.separator} />
-      <View style={styles.countContainer}>
-        <Text style={styles.count}>{count}</Text>
-      </View>
+      {count !== undefined && (
+        <View style={styles.countContainer}>
+          <Text style={styles.count}>{count}</Text>
+        </View>
+      )}
     </View>
   );
 };
