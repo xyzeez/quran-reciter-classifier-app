@@ -1,45 +1,24 @@
 import colors from "@/constants/colors";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Text } from "react-native";
 import { useState, useMemo, useEffect } from "react";
 import ReciterSearchBar from "@/components/ReciterSearchBar";
 import ReciterListItem from "@/components/ReciterListItem";
 import reciterService from "@/services/reciterService";
 import { Reciter } from "@/types/reciter";
 import SectionListHeader from "@/components/SectionListHeader";
+import TabHeader from "@/components/TabHeader";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingInline: 16,
     paddingTop: 48,
     backgroundColor: colors.crest,
     minHeight: "100%",
   },
-  heading: {
-    fontSize: 28,
-    fontFamily: "Poppins_700Bold",
-    textTransform: "capitalize",
-    color: colors.green,
-    width: "100%",
-    textAlign: "center",
-  },
-  text: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    color: colors.black,
-    textAlign: "center",
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  searchHeaderContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-  },
   searchListContainer: {
     gap: 12,
-    height: "100%",
+    flex: 1,
+    paddingHorizontal: 16,
   },
   listContainer: {
     flex: 1,
@@ -88,10 +67,10 @@ const Search = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Explore Reciters</Text>
-      <Text style={styles.text}>
-        Browse through our collection of renowned Quran reciters
-      </Text>
+      <TabHeader
+        title="Explore Reciters"
+        subtitle="Browse through our collection of renowned Quran reciters"
+      />
       <View style={styles.searchListContainer}>
         <ReciterSearchBar
           value={searchQuery}

@@ -98,3 +98,8 @@ export interface SurahListItemProps {
   ayah_text: string;
   onPress?: () => void; // Handler for when the item is pressed
 }
+
+export interface TabHeaderProps {
+  title: string;
+  subtitle: string;
+}

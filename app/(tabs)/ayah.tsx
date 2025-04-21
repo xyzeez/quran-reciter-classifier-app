@@ -1,30 +1,16 @@
 import colors from "@/constants/colors";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Recorder from "@/components/Recorder";
 import { useRouter } from "expo-router";
+import TabHeader from "@/components/TabHeader";
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: "center",
-    paddingInline: 16,
     paddingTop: 48,
-    marginBottom: 96,
-    minHeight: "100%",
+    paddingBottom: 96,
     backgroundColor: colors.crest,
-  },
-  heading: {
-    fontSize: 28,
-    fontFamily: "Poppins_700Bold",
-    textTransform: "capitalize",
-    color: colors.green,
-    width: "100%",
-    textAlign: "center",
-  },
-  text: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    color: colors.black,
-    textAlign: "center",
   },
 });
 
@@ -53,10 +39,10 @@ const Ayah = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Identify the Ayah</Text>
-      <Text style={styles.text}>
-        Record the recitation to identify which ayah is being recited
-      </Text>
+      <TabHeader
+        title="Identify the Ayah"
+        subtitle="Record the recitation to identify which ayah is being recited"
+      />
       <Recorder
         onRecordingComplete={handleFileProcess}
         maxDurationSeconds={10}
