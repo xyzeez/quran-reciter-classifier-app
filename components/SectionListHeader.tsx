@@ -1,22 +1,15 @@
-import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { colors } from "@/constants/colors";
-
-interface SectionListHeaderProps {
-  title: string;
-  count?: number;
-}
+import colors from "@/constants/colors";
+import { SectionListHeaderProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 16,
-    marginBottom: 16,
   },
-  title: {
-    fontSize: 18,
+  text: {
+    fontSize: 14,
     fontFamily: "Poppins_400Regular",
     color: colors.grey,
   },
@@ -39,13 +32,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SectionListHeader: React.FC<SectionListHeaderProps> = ({
-  title,
+const SectionListHeader = ({
   count,
-}) => {
+  title = "All Identified Ayahs",
+}: SectionListHeaderProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.text}>{title}</Text>
       <View style={styles.separator} />
       {count !== undefined && (
         <View style={styles.countContainer}>
@@ -55,3 +48,5 @@ export const SectionListHeader: React.FC<SectionListHeaderProps> = ({
     </View>
   );
 };
+
+export default SectionListHeader;

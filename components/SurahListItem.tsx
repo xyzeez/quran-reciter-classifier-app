@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
+import { SurahListItemProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -35,23 +36,14 @@ const styles = StyleSheet.create({
   },
 });
 
-interface SurahItemProps {
-  active?: boolean;
-  surahNameArabic: string;
-  surahNameEnglish: string;
-  ayahNumberArabic: string;
-  ayahNumberEnglish: string;
-  text: string;
-}
-
-export const SurahItem = ({
+const SurahListItem = ({
   active = false,
   surahNameArabic,
   surahNameEnglish,
   ayahNumberArabic,
   ayahNumberEnglish,
   text,
-}: SurahItemProps) => {
+}: SurahListItemProps) => {
   return (
     <View
       style={[
@@ -76,3 +68,5 @@ export const SurahItem = ({
     </View>
   );
 };
+
+export default SurahListItem;

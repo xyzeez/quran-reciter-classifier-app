@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Audio } from "expo-av";
 import { Pressable, StyleSheet, Text, View, Animated } from "react-native";
 import { useState, useEffect, useRef } from "react";
@@ -48,10 +48,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export function Recorder({
+const Recorder = ({
   onRecordingComplete,
   recordingOptions = Audio.RecordingOptionsPresets.HIGH_QUALITY,
-}: RecorderProps) {
+}: RecorderProps) => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -182,4 +182,6 @@ export function Recorder({
       )}
     </View>
   );
-}
+};
+
+export default Recorder;

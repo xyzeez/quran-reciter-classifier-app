@@ -1,7 +1,7 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ReciterCardProps } from "@/types/reciter";
+import { ReciterListItemProps } from "@/types/reciter";
 
 const styles = StyleSheet.create({
   container: {
@@ -81,14 +81,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export function ReciterCard({
+const ReciterListItem = ({
   name,
   nationality,
   flagUrl,
   recordings,
   imageUrl,
   onPress,
-}: ReciterCardProps) {
+}: ReciterListItemProps) => {
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.imageContainer}>
@@ -121,4 +121,6 @@ export function ReciterCard({
       </View>
     </Pressable>
   );
-}
+};
+
+export default ReciterListItem;

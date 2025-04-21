@@ -1,9 +1,9 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useState } from "react";
-import { Toggle } from "@/components/Toggle";
-import { Recorder } from "@/components/Recorder";
-import { Uploader } from "@/components/Uploader";
+import InputMethodToggle from "@/components/InputMethodToggle";
+import Recorder from "@/components/Recorder";
+import Uploader from "@/components/Uploader";
 import { useRouter } from "expo-router";
 import { Audio } from "expo-av";
 
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Index() {
+const Index = () => {
   const [fileInputType, setFileInputType] = useState<"record" | "upload">(
     "record"
   );
@@ -65,7 +65,7 @@ export default function Index() {
         console.log("Proceeding with the original file.");
 
         router.push({
-          pathname: "/(modals)/prediction",
+          pathname: "/(modals)/ReciterPrediction",
           params: {
             file: JSON.stringify(file),
           },
@@ -91,7 +91,7 @@ export default function Index() {
       <Text style={styles.text}>
         Record or upload an audio file to identify the reciter
       </Text>
-      <Toggle
+      <InputMethodToggle
         fileInputType={fileInputType}
         setFileInputType={setFileInputType}
       />
@@ -104,4 +104,6 @@ export default function Index() {
       {isProcessing && <ActivityIndicator size="large" color={colors.green} />}
     </View>
   );
-}
+};
+
+export default Index;

@@ -84,7 +84,7 @@ const reciters = [
   },
 ];
 
-export const reciterService = {
+const reciterService = {
   // Get all reciters for search functionality
   getAllReciters(): Reciter[] {
     return reciters;
@@ -124,3 +124,5 @@ export const reciterService = {
     });
   },
 };
+
+export default reciterService;

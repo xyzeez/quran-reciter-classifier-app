@@ -7,6 +7,6 @@ export interface Reciter {
   serverUrl: string;
 }
 
-export interface ReciterCardProps extends Reciter {
+export interface ReciterListItemProps extends Reciter {
   onPress?: () => void;
 }

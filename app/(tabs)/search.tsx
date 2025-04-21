@@ -1,11 +1,11 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useState, useMemo, useEffect } from "react";
-import { SearchBar } from "@/components/SearchBar";
-import { ReciterCard } from "@/components/ReciterCard";
-import { reciterService } from "@/services/reciterService";
+import ReciterSearchBar from "@/components/ReciterSearchBar";
+import ReciterListItem from "@/components/ReciterListItem";
+import reciterService from "@/services/reciterService";
 import { Reciter } from "@/types/reciter";
-import { SectionListHeader } from "@/components/SectionListHeader";
+import SectionListHeader from "@/components/SectionListHeader";
 
 const styles = StyleSheet.create({
   container: {
@@ -37,16 +37,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
   },
-  countContainer: {
-    backgroundColor: colors.greenLight,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  count: {
-    fontSize: 12,
-    fontFamily: "Poppins_500Medium",
-    color: colors.green,
+  searchListContainer: {
+    gap: 12,
+    height: "100%",
   },
   listContainer: {
     flex: 1,
@@ -62,7 +55,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   footer: {
-    height: 96,
+    height: 216,
   },
 });
 
@@ -99,29 +92,31 @@ const Search = () => {
       <Text style={styles.text}>
         Browse through our collection of renowned Quran reciters
       </Text>
-      <SearchBar
-        value={searchQuery}
-        onChangeText={handleSearch}
-        placeholder="Search reciters..."
-      />
-      <SectionListHeader
-        title={
-          searchQuery ? `Search results for: ${searchQuery}` : "All reciters"
-        }
-        count={filteredReciters.length}
-      />
-      <ScrollView style={styles.listContainer}>
-        <View style={styles.reciterList}>
-          {filteredReciters.length > 0 ? (
-            filteredReciters.map((reciter) => (
-              <ReciterCard key={reciter.name} {...reciter} />
-            ))
-          ) : (
-            <Text style={styles.noResults}>No reciters found</Text>
-          )}
-        </View>
-        <View style={styles.footer}></View>
-      </ScrollView>
+      <View style={styles.searchListContainer}>
+        <ReciterSearchBar
+          value={searchQuery}
+          onChangeText={handleSearch}
+          placeholder="Search reciters..."
+        />
+        <SectionListHeader
+          title={
+            searchQuery ? `Search results for: ${searchQuery}` : "All reciters"
+          }
+          count={filteredReciters.length}
+        />
+        <ScrollView style={styles.listContainer}>
+          <View style={styles.reciterList}>
+            {filteredReciters.length > 0 ? (
+              filteredReciters.map((reciter) => (
+                <ReciterListItem key={reciter.name} {...reciter} />
+              ))
+            ) : (
+              <Text style={styles.noResults}>No reciters found</Text>
+            )}
+          </View>
+          <View style={styles.footer}></View>
+        </ScrollView>
+      </View>
     </View>
   );
 };

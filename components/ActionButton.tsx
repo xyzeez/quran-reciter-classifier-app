@@ -1,15 +1,7 @@
-import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/constants/colors";
-
-interface ActionButtonProps {
-  label: string;
-  onPress: () => void;
-  iconName?: keyof typeof Ionicons.glyphMap;
-  iconSize?: number;
-  backgroundColor?: string;
-}
+import colors from "@/constants/colors";
+import { ActionButtonProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   button: {
@@ -29,13 +21,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ActionButton: React.FC<ActionButtonProps> = ({
+const ActionButton = ({
   label,
   onPress,
   iconName = "refresh",
   iconSize = 20,
   backgroundColor = colors.green,
-}) => {
+}: ActionButtonProps) => {
   return (
     <TouchableOpacity
       style={[styles.button, { backgroundColor }]}
@@ -48,3 +40,5 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     </TouchableOpacity>
   );
 };
+
+export default ActionButton;

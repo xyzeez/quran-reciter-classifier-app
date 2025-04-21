@@ -1,32 +1,19 @@
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
-import { colors } from "@/constants/colors";
-import { Tab } from "@/components/Tab";
-import { ListTitle } from "@/components/ListTitle";
-import { SurahName } from "@/components/SurahName";
-import { SurahContent } from "@/components/SurahContent";
-import { SurahItem } from "@/components/SurahItem";
+import { View, ScrollView, StyleSheet } from "react-native";
+import colors from "@/constants/colors";
+import NavigationTab from "@/components/NavigationTab";
+import SectionListHeader from "@/components/SectionListHeader";
+import SurahTitleDisplay from "@/components/SurahTitleDisplay";
+import QuranVerseDisplay from "@/components/QuranVerseDisplay";
+import SurahListItem from "@/components/SurahListItem";
 import { useState, useEffect } from "react";
-import { Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
-import { RouteProp } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { ayahService } from "@/services/ayahService";
-import { ErrorScreen } from "@/components/ErrorScreen";
-import { EmptyStateScreen } from "@/components/EmptyStateScreen";
-import { LoadingScreen } from "@/components/LoadingScreen";
-
-// Define a type for the route params
-type AyahPredictionRouteProp = RouteProp<
-  { "ayah-prediction": { file: string } },
-  "ayah-prediction"
->;
+import ayahService from "@/services/ayahService";
+import ErrorScreen from "@/components/ErrorScreen";
+import EmptyStateScreen from "@/components/EmptyStateScreen";
+import LoadingScreen from "@/components/LoadingScreen";
+import { AyahPredictionRouteProp } from "@/types/navigation";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +25,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     gap: 24,
-    paddingBottom: 92,
+    paddingBottom: 16,
   },
   contentContainer: {
     gap: 20,
@@ -103,7 +90,7 @@ const AyahPrediction = () => {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Tab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" />
         <LoadingScreen message="Identifying Ayah..." />
       </View>
     );
@@ -112,7 +99,7 @@ const AyahPrediction = () => {
   if (error) {
     return (
       <View style={styles.container}>
-        <Tab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" />
         <ErrorScreen
           title={error.title}
           description={error.description}
@@ -126,7 +113,7 @@ const AyahPrediction = () => {
   if (!isFound) {
     return (
       <View style={styles.container}>
-        <Tab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" />
         <EmptyStateScreen
           title="Ayah Not Identified"
           description="We couldn't identify the ayah with confidence. The audio might be unclear or the recitation may not match our database."
@@ -139,26 +126,29 @@ const AyahPrediction = () => {
 
   return (
     <View style={styles.container}>
-      <Tab title="Ayah Identified" />
+      <NavigationTab title="Ayah Identified" />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.contentContainer}>
-          <SurahName
+          <SurahTitleDisplay
             surahNumberArabic={matchedAyah.surahNumber.toString()}
             surahNumberEnglish={matchedAyah.surahNumber.toString()}
             surahNameArabic={matchedAyah.surahName.arabic}
           />
-          <SurahContent
+          <QuranVerseDisplay
             text={matchedAyah.text}
             ayahNumber={matchedAyah.ayahNumber.arabic}
           />
 
-          <ListTitle title="Matching Ayahs" count={similarAyahs.length} />
+          <SectionListHeader
+            title="Matching Ayahs"
+            count={similarAyahs.length}
+          />
           <View style={styles.listContainer}>
             {similarAyahs.map((ayah, index) => (
-              <SurahItem
+              <SurahListItem
                 key={index}
                 surahNameArabic={ayah.surahName.arabic}
                 surahNameEnglish={ayah.surahName.english}

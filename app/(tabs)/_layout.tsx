@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Tabs } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";

@@ -1,33 +1,30 @@
-import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { colors } from "@/constants/colors";
-
-interface LoadingScreenProps {
-  message?: string;
-}
+import colors from "@/constants/colors";
+import { LoadingScreenProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.crest,
-    gap: 16,
+    paddingHorizontal: 16,
   },
-  text: {
+  message: {
     fontFamily: "Poppins_400Regular",
-    color: colors.green,
     fontSize: 16,
+    color: colors.grey,
+    textAlign: "center",
+    marginTop: 16,
   },
 });
 
-export const LoadingScreen: React.FC<LoadingScreenProps> = ({
-  message = "Loading...",
-}) => {
+const LoadingScreen = ({ message }: LoadingScreenProps) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={colors.green} />
-      <Text style={styles.text}>{message}</Text>
+      <Text style={styles.message}>{message}</Text>
     </View>
   );
 };
+
+export default LoadingScreen;

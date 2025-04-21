@@ -1,7 +1,7 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ReciterCardProps } from "@/types/reciter";
+import { ReciterListItemProps } from "@/types/reciter";
 
 const styles = StyleSheet.create({
   container: {
@@ -88,13 +88,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const TopPrediction = ({
+const ReciterPredictionItem = ({
   name,
   nationality,
   flagUrl,
   confidence,
   imageUrl,
-}: ReciterCardProps) => {
+}: ReciterListItemProps) => {
   return (
     <View style={styles.container}>
       <Image
@@ -128,4 +128,4 @@ const TopPrediction = ({
   );
 };
 
-export default TopPrediction;
+export default ReciterPredictionItem;

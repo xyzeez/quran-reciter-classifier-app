@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { QuranVerseDisplayProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,12 +39,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface SurahContentProps {
-  text: string;
-  ayahNumber: string;
-}
-
-export const SurahContent = ({ text, ayahNumber }: SurahContentProps) => {
+const QuranVerseDisplay = ({ text, ayahNumber }: QuranVerseDisplayProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
   const numberOfLines = isExpanded ? undefined : 7;
@@ -90,3 +86,5 @@ export const SurahContent = ({ text, ayahNumber }: SurahContentProps) => {
     </View>
   );
 };
+
+export default QuranVerseDisplay;

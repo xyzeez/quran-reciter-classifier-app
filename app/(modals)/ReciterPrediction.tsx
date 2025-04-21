@@ -1,37 +1,27 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/constants/colors";
-import ReciterPredicted from "@/components/ReciterPredicted";
+import { View, ScrollView, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import colors from "@/constants/colors";
+import PredictedReciter from "@/components/PredictedReciter";
 import { Reciter } from "@/types/reciter";
-import TopPrediction from "@/components/TopPrediction";
+import ReciterPredictionItem from "@/components/ReciterPredictionItem";
 import { useEffect, useState } from "react";
-import { reciterService } from "@/services/reciterService";
+import reciterService from "@/services/reciterService";
 import { useRoute } from "@react-navigation/native";
-import { RouteProp } from "@react-navigation/native";
-import { ErrorScreen } from "@/components/ErrorScreen";
-import { EmptyStateScreen } from "@/components/EmptyStateScreen";
-import { LoadingScreen } from "@/components/LoadingScreen";
-import { ModalHeader } from "@/components/ModalHeader";
-import { SectionListHeader } from "@/components/SectionListHeader";
-
-// Define a type for the route params
-type PredictionRouteProp = RouteProp<
-  { Prediction: { file: string } },
-  "Prediction"
->;
+import ErrorScreen from "@/components/ErrorScreen";
+import EmptyStateScreen from "@/components/EmptyStateScreen";
+import LoadingScreen from "@/components/LoadingScreen";
+import SectionListHeader from "@/components/SectionListHeader";
+import NavigationTab from "@/components/NavigationTab";
+import { ReciterPredictionRouteProp } from "@/types/navigation";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.crest,
     paddingHorizontal: 16,
+  },
+  scrollContent: {
+    gap: 12,
   },
   reciterList: {
     gap: 12,
@@ -41,9 +31,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function PredictionResults() {
+const ReciterPrediction = () => {
   const router = useRouter();
-  const route = useRoute<PredictionRouteProp>();
+  const route = useRoute<ReciterPredictionRouteProp>();
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
   const [predictionError, setPredictionError] = useState<string | null>(null);
@@ -134,10 +124,7 @@ export default function PredictionResults() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <ModalHeader
-          title="Reciter Prediction"
-          onBackPress={() => router.back()}
-        />
+        <NavigationTab title="Reciter Prediction" />
         <LoadingScreen message="Analyzing audio..." />
       </View>
     );
@@ -146,10 +133,7 @@ export default function PredictionResults() {
   if (prediction?.errorTitle) {
     return (
       <View style={styles.container}>
-        <ModalHeader
-          title="Reciter Prediction"
-          onBackPress={() => router.back()}
-        />
+        <NavigationTab title="Reciter Prediction" />
         <ErrorScreen
           title={prediction.errorTitle}
           subtitle={prediction.errorSubtitle}
@@ -164,10 +148,7 @@ export default function PredictionResults() {
   if (!prediction?.reliable) {
     return (
       <View style={styles.container}>
-        <ModalHeader
-          title="Reciter Prediction"
-          onBackPress={() => router.back()}
-        />
+        <NavigationTab title="Reciter Prediction" />
         <EmptyStateScreen
           title="Reciter Not Identified"
           description="We couldn't identify the reciter with confidence. The audio might be unclear or the reciter may not be in our database."
@@ -180,25 +161,27 @@ export default function PredictionResults() {
 
   return (
     <View style={styles.container}>
-      <ModalHeader
-        title="Reciter Prediction"
-        onBackPress={() => router.back()}
-      />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <NavigationTab title="Reciter Prediction" />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {prediction?.mainPrediction && (
-          <ReciterPredicted reciter={prediction.mainPrediction} />
+          <PredictedReciter reciter={prediction.mainPrediction} />
         )}
         <SectionListHeader
-          title="Top Predictions"
+          title={`Top ${prediction?.topPredictions?.length} Predictions`}
           count={prediction?.topPredictions?.length}
         />
         <View style={styles.reciterList}>
           {prediction?.topPredictions?.map((reciter, index) => (
-            <TopPrediction key={index} {...reciter} />
+            <ReciterPredictionItem key={index} {...reciter} />
           ))}
         </View>
         <View style={styles.footer} />
       </ScrollView>
     </View>
   );
-}
+};
+
+export default ReciterPrediction;

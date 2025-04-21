@@ -1,61 +1,49 @@
-import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/constants/colors";
-import { ActionButton } from "./ActionButton";
-
-interface EmptyStateScreenProps {
-  title: string;
-  description: string;
-  iconName: keyof typeof Ionicons.glyphMap;
-  buttonText?: string;
-  onButtonPress: () => void;
-}
+import colors from "@/constants/colors";
+import ActionButton from "./ActionButton";
+import { EmptyStateScreenProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    backgroundColor: colors.white,
-    borderRadius: 60,
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
+    paddingHorizontal: 32,
+    gap: 16,
   },
   title: {
-    fontSize: 24,
     fontFamily: "Poppins_600SemiBold",
-    color: colors.green,
+    fontSize: 24,
+    color: colors.black,
     textAlign: "center",
-    marginBottom: 12,
   },
   description: {
-    fontSize: 16,
     fontFamily: "Poppins_400Regular",
+    fontSize: 14,
     color: colors.grey,
     textAlign: "center",
-    lineHeight: 24,
+  },
+  icon: {
+    marginBottom: 16,
   },
 });
 
-export const EmptyStateScreen: React.FC<EmptyStateScreenProps> = ({
+const EmptyStateScreen = ({
   title,
   description,
   iconName,
   buttonText = "Try Again",
   onButtonPress,
-}) => {
+}: EmptyStateScreenProps) => {
   return (
     <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Ionicons name={iconName} size={60} color={colors.green} />
-      </View>
+      <Ionicons
+        name={iconName}
+        size={100}
+        color={colors.grey}
+        style={styles.icon}
+      />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
       <ActionButton
@@ -66,3 +54,5 @@ export const EmptyStateScreen: React.FC<EmptyStateScreenProps> = ({
     </View>
   );
 };
+
+export default EmptyStateScreen;

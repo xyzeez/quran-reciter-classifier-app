@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Reciter } from "@/types/reciter";
 import { Ionicons } from "@expo/vector-icons";
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReciterPredicted = ({ reciter }: { reciter: Reciter }) => {
+const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
   return (
     <View style={styles.container}>
       <View>
@@ -108,4 +108,4 @@ const ReciterPredicted = ({ reciter }: { reciter: Reciter }) => {
   );
 };
 
-export default ReciterPredicted;
+export default PredictedReciter;

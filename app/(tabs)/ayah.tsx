@@ -1,6 +1,6 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { StyleSheet, Text, View } from "react-native";
-import { Recorder } from "@/components/Recorder";
+import Recorder from "@/components/Recorder";
 import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
@@ -39,7 +39,7 @@ const Ayah = () => {
     try {
       console.log("Received file for Ayah prediction:", file);
       router.push({
-        pathname: "/(modals)/ayah-prediction",
+        pathname: "/(modals)/AyahPrediction",
         params: { file: JSON.stringify(file) },
       });
     } catch (error: any) {

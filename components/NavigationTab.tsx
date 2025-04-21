@@ -2,7 +2,8 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
+import { NavigationTabProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   header: {
@@ -21,11 +22,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface TabProps {
-  title: string;
-}
-
-export const Tab = ({ title }: TabProps) => {
+const NavigationTab = ({ title }: NavigationTabProps) => {
   return (
     <Stack.Screen
       options={{
@@ -42,3 +39,5 @@ export const Tab = ({ title }: TabProps) => {
     />
   );
 };
+
+export default NavigationTab;

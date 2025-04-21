@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import * as DocumentPicker from "expo-document-picker";
 import {
   Pressable,
@@ -71,10 +71,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export function Uploader({
+const Uploader = ({
   onFileUpload,
   acceptedFileTypes = ["audio/*"],
-}: UploaderProps) {
+}: UploaderProps) => {
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     uri: string;
@@ -163,4 +163,6 @@ export function Uploader({
       </View>
     </Pressable>
   );
-}
+};
+
+export default Uploader;
