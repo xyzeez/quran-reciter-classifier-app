@@ -150,8 +150,8 @@ const AyahPrediction = () => {
                 key={index}
                 surah_name={ayah.surah_name}
                 surah_name_en={ayah.surah_name_en}
-                ayah_number={ayah.ayah_number}
-                ayah_number_en={ayah.ayah_number_en}
+                surah_number={ayah.surah_number}
+                surah_number_en={ayah.surah_number_en}
                 ayah_text={ayah.ayah_text}
               />
             ))}

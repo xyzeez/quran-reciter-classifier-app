@@ -4,28 +4,49 @@ import { SurahListItemProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
-    gap: 8,
-    borderRadius: 8,
-    paddingBlock: 10,
-    paddingInline: 12,
+    gap: 10,
+    borderRadius: 12,
+    padding: 14,
+    borderColor: colors.green + "30",
+    borderWidth: 1,
+  },
+  containerActive: {
     borderColor: colors.green,
+    backgroundColor: colors.greenLight,
+    borderWidth: 1.5,
   },
   header: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
   },
-  arabicText: {
-    fontFamily: "qpchafs",
-    fontWeight: "700",
-    direction: "rtl",
+  headerLeft: {
+    alignItems: "flex-start",
+  },
+  headerRight: {
+    alignItems: "flex-end",
+  },
+  surahNameEnglish: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 14,
+    color: colors.black,
+  },
+  ayahNumberEnglish: {
+    fontFamily: "Poppins_400Regular",
+    fontSize: 11,
     color: colors.grey,
   },
-  englishText: {
-    fontFamily: "Poppins_500Medium",
-    textAlign: "center",
-    fontSize: 12,
+  surahNameArabic: {
+    fontFamily: "qpchafs",
+    fontSize: 18, // Larger for Arabic Surah Name
+    fontWeight: "700",
+    direction: "rtl",
+    color: colors.black,
+  },
+  ayahNumberArabic: {
+    // fontFamily: "qpchafs", // Removed to prevent number transformation
+    fontSize: 14,
+    direction: "rtl",
     color: colors.grey,
   },
   content: {
@@ -33,6 +54,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "justify",
     direction: "rtl",
+    lineHeight: 30, // Improved line height for readability
+    color: colors.black,
   },
 });
 
@@ -40,31 +63,32 @@ const SurahListItem = ({
   active = false,
   surah_name,
   surah_name_en,
-  ayah_number,
-  ayah_number_en,
+  surah_number,
+  surah_number_en,
   ayah_text,
 }: SurahListItemProps) => {
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          borderWidth: active ? 2 : 1,
-          backgroundColor: active ? colors.greenLight : "",
-        },
-      ]}
-    >
+    <View style={[styles.container, active && styles.containerActive]}>
       <View style={styles.header}>
-        <Text style={styles.arabicText}>
-          {surah_name} : {ayah_number}
-        </Text>
-        <Text style={styles.englishText}>
-          {surah_name_en} :{" "}
-          {typeof ayah_number_en === "number"
-            ? ayah_number_en.toString()
-            : ayah_number_en}
-        </Text>
+        {/* English Info - Left */}
+        <View style={styles.headerLeft}>
+          <Text style={styles.surahNameEnglish}>{surah_name_en}</Text>
+          <Text style={styles.ayahNumberEnglish}>
+            Surah:{" "}
+            {typeof surah_number_en === "number"
+              ? surah_number_en.toString()
+              : surah_number_en}
+          </Text>
+        </View>
+
+        {/* Arabic Info - Right */}
+        <View style={styles.headerRight}>
+          <Text style={styles.surahNameArabic}>{surah_name}</Text>
+          <Text style={styles.ayahNumberArabic}>سورة: {surah_number}</Text>
+        </View>
       </View>
+
+      {/* Ayah Text */}
       <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
         {ayah_text}
       </Text>
