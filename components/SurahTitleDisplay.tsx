@@ -1,5 +1,6 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import frame from "@/assets/frame.png";
+import { SurahTitleDisplayProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -52,17 +53,11 @@ const styles = StyleSheet.create({
   },
 });
 
-interface SurahNameProps {
-  surahNumberArabic: string;
-  surahNumberEnglish: string;
-  surahNameArabic: string;
-}
-
-export const SurahName = ({
+const SurahTitleDisplay = ({
   surahNumberArabic,
   surahNumberEnglish,
   surahNameArabic,
-}: SurahNameProps) => {
+}: SurahTitleDisplayProps) => {
   return (
     <View style={styles.container}>
       <Image source={frame} style={styles.frame} />
@@ -83,3 +78,5 @@ export const SurahName = ({
     </View>
   );
 };
+
+export default SurahTitleDisplay;

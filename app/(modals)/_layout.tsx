@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-export default function ModalsLayout() {
+const ModalsLayout = () => {
   return (
     <Stack
       screenOptions={{
@@ -10,4 +10,6 @@ export default function ModalsLayout() {
       }}
     />
   );
-}
+};
+
+export default ModalsLayout;

@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View } from "react-native";
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { SearchBarProps } from "@/types/ui";
+import { ReciterSearchBarProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,11 +22,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SearchBar = ({
+const ReciterSearchBar = ({
   value,
   onChangeText,
   placeholder = "Search...",
-}: SearchBarProps) => {
+}: ReciterSearchBarProps) => {
   return (
     <View style={styles.container}>
       <Ionicons name="search" size={24} color={colors.green} />
@@ -35,7 +35,10 @@ export const SearchBar = ({
         onChangeText={onChangeText}
         placeholder={placeholder}
         style={styles.input}
+        cursorColor={colors.green}
       />
     </View>
   );
 };
+
+export default ReciterSearchBar;

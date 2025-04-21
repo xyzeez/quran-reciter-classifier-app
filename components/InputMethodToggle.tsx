@@ -1,6 +1,6 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ToggleProps } from "@/types/ui";
+import { InputMethodToggleProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -60,7 +60,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export function Toggle({ fileInputType, setFileInputType }: ToggleProps) {
+const InputMethodToggle = ({
+  fileInputType,
+  setFileInputType,
+}: InputMethodToggleProps) => {
   return (
     <View style={styles.container}>
       <Pressable
@@ -89,4 +92,6 @@ export function Toggle({ fileInputType, setFileInputType }: ToggleProps) {
       </Pressable>
     </View>
   );
-}
+};
+
+export default InputMethodToggle;

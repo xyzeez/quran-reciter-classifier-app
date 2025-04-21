@@ -1,38 +1,24 @@
-import { colors } from "@/constants/colors";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import colors from "@/constants/colors";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { useState } from "react";
-import { Toggle } from "@/components/Toggle";
-import { Recorder } from "@/components/Recorder";
-import { Uploader } from "@/components/Uploader";
+import InputMethodToggle from "@/components/InputMethodToggle";
+import Recorder from "@/components/Recorder";
+import Uploader from "@/components/Uploader";
 import { useRouter } from "expo-router";
 import { Audio } from "expo-av";
+import TabHeader from "@/components/TabHeader";
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: "center",
-    paddingInline: 16,
     paddingTop: 48,
-    marginBottom: 96,
-    minHeight: "100%",
+    paddingBottom: 96,
     backgroundColor: colors.crest,
-  },
-  heading: {
-    fontSize: 28,
-    fontFamily: "Poppins_700Bold",
-    textTransform: "capitalize",
-    color: colors.green,
-    width: "100%",
-    textAlign: "center",
-  },
-  text: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
-    color: colors.black,
-    textAlign: "center",
   },
 });
 
-export default function Index() {
+const Index = () => {
   const [fileInputType, setFileInputType] = useState<"record" | "upload">(
     "record"
   );
@@ -54,7 +40,7 @@ export default function Index() {
         const duration = status.durationMillis / 1000;
         console.log(`Original audio duration: ${duration} seconds`);
 
-        await sound.unloadAsync(); // Unload the sound after checking duration
+        await sound.unloadAsync();
 
         if (duration < 5) {
           alert("Audio file is too short. Minimum length is 5 seconds.");
@@ -65,14 +51,14 @@ export default function Index() {
         console.log("Proceeding with the original file.");
 
         router.push({
-          pathname: "/(modals)/prediction",
+          pathname: "/(modals)/ReciterPrediction",
           params: {
             file: JSON.stringify(file),
           },
         });
       } else {
         console.error("Failed to load audio file or duration is undefined.");
-        await sound.unloadAsync(); // Attempt to unload even if status is bad
+        await sound.unloadAsync();
       }
     } catch (error: any) {
       console.error("Error processing file:", {
@@ -87,16 +73,19 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Identify the Qari</Text>
-      <Text style={styles.text}>
-        Record or upload an audio file to identify the reciter
-      </Text>
-      <Toggle
+      <TabHeader
+        title="Identify the Qari"
+        subtitle="Record or upload an audio file to identify the reciter"
+      />
+      <InputMethodToggle
         fileInputType={fileInputType}
         setFileInputType={setFileInputType}
       />
       {fileInputType === "record" && (
-        <Recorder onRecordingComplete={handleFileProcess} />
+        <Recorder
+          onRecordingComplete={handleFileProcess}
+          maxDurationSeconds={15}
+        />
       )}
       {fileInputType === "upload" && (
         <Uploader onFileUpload={handleFileProcess} />
@@ -104,4 +93,6 @@ export default function Index() {
       {isProcessing && <ActivityIndicator size="large" color={colors.green} />}
     </View>
   );
-}
+};
+
+export default Index;

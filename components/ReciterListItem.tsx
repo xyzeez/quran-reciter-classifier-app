@@ -1,97 +1,94 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { ReciterCardProps } from "@/types/reciter";
+import { ReciterListItemProps } from "@/types/reciter";
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 80,
+    height: 90,
     padding: 12,
     backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
+    gap: 16,
     shadowColor: colors.black,
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.08,
-    shadowRadius: 2,
+    shadowRadius: 3,
     elevation: 2,
+    marginBottom: 10,
   },
-  imageContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    overflow: "hidden",
-    backgroundColor: colors.greyLight,
+  pressed: {
+    opacity: 0.9,
+    backgroundColor: colors.crest,
+  },
+  imageWrapper: {
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.greenLight,
+    borderColor: colors.green + "20",
+    overflow: "hidden",
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: 50,
+    height: 50,
   },
   infoContainer: {
     flex: 1,
-    marginLeft: 12,
     justifyContent: "center",
+    height: "100%",
+    paddingVertical: 6,
   },
   name: {
     fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
     color: colors.black,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   bottomRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 8,
+    flexWrap: "nowrap",
   },
   nationalityContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: colors.greenLight,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   flag: {
     width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 6,
+    height: 12,
+    marginRight: 4,
+    borderRadius: 2,
   },
   nationality: {
-    fontSize: 13,
-    fontFamily: "Poppins_400Regular",
-    color: colors.grey,
-  },
-  recordingsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.greenLight,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    gap: 4,
-  },
-  recordingsCount: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "Poppins_500Medium",
     color: colors.green,
+    flexShrink: 1,
   },
 });
 
-export function ReciterCard({
+const ReciterListItem = ({
   name,
   nationality,
   flagUrl,
-  recordings,
   imageUrl,
   onPress,
-}: ReciterCardProps) {
+}: ReciterListItemProps) => {
   return (
-    <Pressable style={styles.container} onPress={onPress}>
-      <View style={styles.imageContainer}>
+    <Pressable
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+      onPress={onPress}
+    >
+      <View style={styles.imageWrapper}>
         <Image
           source={{ uri: imageUrl }}
           style={styles.image}
@@ -99,7 +96,7 @@ export function ReciterCard({
         />
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.name} numberOfLines={2} ellipsizeMode="tail">
+        <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
           {name}
         </Text>
         <View style={styles.bottomRow}>
@@ -109,16 +106,14 @@ export function ReciterCard({
               style={styles.flag}
               resizeMode="cover"
             />
-            <Text style={styles.nationality}>{nationality}</Text>
-          </View>
-          <View style={styles.recordingsContainer}>
-            <Ionicons name="play" size={14} color={colors.green} />
-            <Text style={styles.recordingsCount}>
-              {recordings.toLocaleString()}
+            <Text style={styles.nationality} numberOfLines={1}>
+              {nationality}
             </Text>
           </View>
         </View>
       </View>
     </Pressable>
   );
-}
+};
+
+export default ReciterListItem;

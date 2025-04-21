@@ -9,6 +9,7 @@ export interface AudioFile {
 export interface RecorderProps {
   onRecordingComplete?: (file: AudioFile) => Promise<void>;
   recordingOptions?: Partial<Audio.RecordingOptions>;
+  maxDurationSeconds?: number;
 }
 
 export interface UploaderProps {

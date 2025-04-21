@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import * as DocumentPicker from "expo-document-picker";
 import {
   Pressable,
@@ -13,75 +13,87 @@ import { UploaderProps } from "@/types/audio";
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
     alignItems: "center",
     justifyContent: "center",
-    width: 280,
-    height: 360,
-    marginTop: 32,
+    width: "90%",
+    maxWidth: 350,
+    minHeight: 250,
+    marginTop: 48,
     padding: 24,
     borderWidth: 2,
     borderStyle: "dashed",
-    borderColor: colors.green,
-    borderRadius: 30,
-    backgroundColor: colors.white,
+    borderColor: colors.green + "80",
+    borderRadius: 20,
+    backgroundColor: colors.white + "80",
   },
-  text: {
-    fontSize: 12,
-    fontFamily: "Poppins_400Regular",
-    color: colors.black,
+  promptContainer: {
+    alignItems: "center",
+    gap: 16,
+  },
+  promptText: {
+    fontSize: 14,
+    fontFamily: "Poppins_500Medium",
+    color: colors.green,
     textAlign: "center",
   },
-  inner: {
+  fileInfoContainer: {
+    width: "100%",
+    alignItems: "center",
+    gap: 20,
+  },
+  fileDetailsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 16,
+    gap: 12,
     width: "100%",
-    padding: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: colors.green,
-    borderRadius: 8,
+    borderColor: colors.green + "40",
+    borderRadius: 12,
     backgroundColor: colors.greenLight,
   },
   fileText: {
-    fontSize: 12,
+    flex: 1,
+    fontSize: 13,
     fontFamily: "Poppins_500Medium",
     color: colors.black,
-    textAlign: "center",
   },
-  buttonContainer: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: -24,
-    insetInline: 0,
-  },
-  button: {
+  identifyButton: {
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 164,
-    height: 48,
-    borderRadius: 9999,
+    width: "80%",
+    height: 50,
+    borderRadius: 25,
     backgroundColor: colors.green,
+    marginTop: 16,
+    gap: 8,
   },
-  buttonText: {
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
+  identifyButtonDisabled: {
+    backgroundColor: colors.greyLight,
+  },
+  identifyButtonText: {
+    fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
     color: colors.white,
   },
 });
 
-export function Uploader({
+const Uploader = ({
   onFileUpload,
   acceptedFileTypes = ["audio/*"],
-}: UploaderProps) {
+}: UploaderProps) => {
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     uri: string;
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleUploadedFile = async () => {
+  const handleSelectFile = async () => {
+    if (isUploading || uploadedFile) return;
+
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: acceptedFileTypes,
@@ -100,19 +112,27 @@ export function Uploader({
     }
   };
 
-  const deleteUploadedFile = () => setUploadedFile(null);
+  const deleteUploadedFile = () => {
+    if (isUploading) return;
+    setUploadedFile(null);
+  };
 
-  const handleFileUpload = async () => {
-    if (!uploadedFile) return;
+  const handleIdentifyPress = async () => {
+    if (!uploadedFile || isUploading) return;
 
     try {
       setIsUploading(true);
       console.log("Uploading file:", uploadedFile.name);
 
+      const fileExtension = uploadedFile.name.split(".").pop()?.toLowerCase();
+      let mimeType = "audio/mpeg";
+      if (fileExtension === "wav") mimeType = "audio/wav";
+      if (fileExtension === "m4a") mimeType = "audio/x-m4a";
+
       await onFileUpload({
         uri: uploadedFile.uri,
         name: uploadedFile.name,
-        type: "audio/mpeg",
+        type: mimeType,
       });
 
       setUploadedFile(null);
@@ -128,39 +148,63 @@ export function Uploader({
   };
 
   return (
-    <Pressable onPress={handleUploadedFile} style={styles.container}>
-      {!uploadedFile && (
-        <>
-          <Ionicons name="cloud-upload" size={100} color={colors.green} />
-          <Text style={styles.text}>Select a Quran audio file (MP3, WAV)</Text>
-        </>
-      )}
-      {uploadedFile && (
-        <>
-          <Ionicons name="cloud-done" size={100} color={colors.green} />
-          <View style={styles.inner}>
-            <Text style={styles.fileText}>{uploadedFile.name}</Text>
-            <Pressable onPress={deleteUploadedFile}>
-              <Ionicons name="close-circle" size={24} color={colors.red} />
+    <Pressable
+      onPress={handleSelectFile}
+      style={styles.container}
+      disabled={isUploading}
+    >
+      {!uploadedFile ? (
+        <View style={styles.promptContainer}>
+          <Ionicons
+            name="cloud-upload-outline"
+            size={80}
+            color={colors.green}
+          />
+          <Text style={styles.promptText}>
+            Tap to select an audio file (MP3, WAV, M4A)
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.fileInfoContainer}>
+          <Ionicons
+            name="musical-notes-outline"
+            size={80}
+            color={colors.green}
+          />
+          <View style={styles.fileDetailsRow}>
+            <Text
+              style={styles.fileText}
+              numberOfLines={1}
+              ellipsizeMode="middle"
+            >
+              {uploadedFile.name}
+            </Text>
+            <Pressable onPress={deleteUploadedFile} disabled={isUploading}>
+              <Ionicons
+                name="close-circle"
+                size={24}
+                color={isUploading ? colors.grey : colors.red}
+              />
             </Pressable>
           </View>
-        </>
+          <Pressable
+            style={[
+              styles.identifyButton,
+              isUploading && styles.identifyButtonDisabled,
+            ]}
+            onPress={handleIdentifyPress}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <ActivityIndicator size="small" color={colors.green} />
+            ) : (
+              <Text style={styles.identifyButtonText}>Identify</Text>
+            )}
+          </Pressable>
+        </View>
       )}
-      <View style={styles.buttonContainer}>
-        <Pressable
-          style={[styles.button]}
-          onPress={uploadedFile ? handleFileUpload : handleUploadedFile}
-          disabled={isUploading}
-        >
-          {isUploading ? (
-            <ActivityIndicator size="small" color={colors.white} />
-          ) : (
-            <Text style={styles.buttonText}>
-              {uploadedFile ? "Identify Reciter" : "Choose Audio File"}
-            </Text>
-          )}
-        </Pressable>
-      </View>
     </Pressable>
   );
-}
+};
+
+export default Uploader;

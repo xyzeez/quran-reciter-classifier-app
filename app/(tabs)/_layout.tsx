@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { Tabs } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -89,7 +89,7 @@ const TabsLayout = () => {
           title: "Ayah",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} title="Ayah" iconName="musical-notes" />
+            <TabIcon focused={focused} title="Ayah" iconName="book-outline" />
           ),
         }}
       />
