@@ -2,7 +2,6 @@ import { View, ScrollView, StyleSheet } from "react-native";
 import colors from "@/constants/colors";
 import NavigationTab from "@/components/NavigationTab";
 import SectionListHeader from "@/components/SectionListHeader";
-import SurahTitleDisplay from "@/components/SurahTitleDisplay";
 import QuranVerseDisplay from "@/components/QuranVerseDisplay";
 import SurahListItem from "@/components/SurahListItem";
 import { useState, useEffect } from "react";
@@ -132,14 +131,13 @@ const AyahPrediction = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.contentContainer}>
-          <SurahTitleDisplay
-            surahNumberArabic={matchedAyah.surahNumber.toString()}
-            surahNumberEnglish={matchedAyah.surahNumber.toString()}
-            surahNameArabic={matchedAyah.surahName.arabic}
-          />
           <QuranVerseDisplay
-            text={matchedAyah.text}
-            ayahNumber={matchedAyah.ayahNumber.arabic}
+            surah_number={matchedAyah.surah_number}
+            surah_number_en={matchedAyah.surah_number_en}
+            encode={matchedAyah.encode}
+            ayah_text={matchedAyah.ayah_text}
+            ayah_number={matchedAyah.ayah_number}
+            surah_name_en={matchedAyah.surah_name_en}
           />
 
           <SectionListHeader
@@ -150,11 +148,11 @@ const AyahPrediction = () => {
             {similarAyahs.map((ayah, index) => (
               <SurahListItem
                 key={index}
-                surahNameArabic={ayah.surahName.arabic}
-                surahNameEnglish={ayah.surahName.english}
-                ayahNumberArabic={ayah.ayahNumber.arabic}
-                ayahNumberEnglish={ayah.ayahNumber.english}
-                text={ayah.text}
+                surah_name={ayah.surah_name}
+                surah_name_en={ayah.surah_name_en}
+                ayah_number={ayah.ayah_number}
+                ayah_number_en={ayah.ayah_number_en}
+                ayah_text={ayah.ayah_text}
               />
             ))}
           </View>

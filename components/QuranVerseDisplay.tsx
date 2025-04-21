@@ -1,18 +1,21 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import frame from "@/assets/frame.png";
 import { QuranVerseDisplayProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    paddingTop: 16,
   },
   text: {
     fontFamily: "qpchafs",
     fontSize: 24,
     textAlign: "justify",
     direction: "rtl",
+    marginTop: 16,
   },
   textSpace: {
     width: 6,
@@ -37,9 +40,85 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  // Surah title styles
+  titleContainer: {
+    position: "relative",
+    height: 48,
+    marginBottom: 18,
+  },
+  titleFrame: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+  },
+  titleContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10%",
+    height: "100%",
+    paddingInline: "10%",
+  },
+  numberContainer: {
+    width: "10%",
+  },
+  numberText: {
+    fontFamily: "Poppins_500Medium",
+    textAlign: "center",
+    fontSize: 12,
+    marginBottom: -2,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    direction: "rtl",
+    width: "60%",
+    paddingRight: 10,
+  },
+  nameText: {
+    fontSize: 28,
+    fontFamily: "surahnames",
+    textAlign: "center",
+  },
+  arabicNumberContainer: {
+    width: "10%",
+  },
+  arabicNumberText: {
+    fontFamily: "qpchafs",
+    textAlign: "center",
+    fontWeight: "700",
+  },
+  englishNameContainer: {
+    position: "absolute",
+    top: "95%",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  englishNameText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 12,
+    color: colors.green,
+    textAlign: "center",
+    backgroundColor: colors.greenLight,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    overflow: "hidden",
+  },
 });
 
-const QuranVerseDisplay = ({ text, ayahNumber }: QuranVerseDisplayProps) => {
+const QuranVerseDisplay = ({
+  ayah_text,
+  ayah_number,
+  surah_name_en,
+  surah_number,
+  surah_number_en,
+  encode,
+}: QuranVerseDisplayProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
   const numberOfLines = isExpanded ? undefined : 7;
@@ -60,15 +139,44 @@ const QuranVerseDisplay = ({ text, ayahNumber }: QuranVerseDisplayProps) => {
         },
       ]}
     >
+      {/* Surah Title Display */}
+      <View style={styles.titleContainer}>
+        <Image source={frame} style={styles.titleFrame} />
+        <View style={styles.titleContent}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.numberText}>
+              {typeof surah_number_en === "number"
+                ? surah_number_en.toString()
+                : surah_number_en}
+            </Text>
+          </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.nameText}>
+              {encode}
+              {"\uE900"}
+            </Text>
+          </View>
+          <View style={styles.arabicNumberContainer}>
+            <Text style={styles.arabicNumberText}>{surah_number}</Text>
+          </View>
+        </View>
+
+        <View style={styles.englishNameContainer}>
+          <Text style={styles.englishNameText}>{surah_name_en}</Text>
+        </View>
+      </View>
+
+      {/* Verse Text */}
       <Text
         style={styles.text}
         onTextLayout={handleTextLayout}
         numberOfLines={numberOfLines}
       >
-        {text}
+        {ayah_text}
         <View style={styles.textSpace} />
-        <Text style={styles.ayahNumber}>{ayahNumber}</Text>
+        <Text style={styles.ayahNumber}>{ayah_number}</Text>
       </Text>
+
       {showReadMore && (
         <View style={styles.readMoreButton}>
           <TouchableOpacity

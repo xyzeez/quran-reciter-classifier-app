@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
 
 const SurahListItem = ({
   active = false,
-  surahNameArabic,
-  surahNameEnglish,
-  ayahNumberArabic,
-  ayahNumberEnglish,
-  text,
+  surah_name,
+  surah_name_en,
+  ayah_number,
+  ayah_number_en,
+  ayah_text,
 }: SurahListItemProps) => {
   return (
     <View
@@ -56,14 +56,17 @@ const SurahListItem = ({
     >
       <View style={styles.header}>
         <Text style={styles.arabicText}>
-          {surahNameArabic} : {ayahNumberArabic}
+          {surah_name} : {ayah_number}
         </Text>
         <Text style={styles.englishText}>
-          {surahNameEnglish} : {ayahNumberEnglish}
+          {surah_name_en} :{" "}
+          {typeof ayah_number_en === "number"
+            ? ayah_number_en.toString()
+            : ayah_number_en}
         </Text>
       </View>
       <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
-        {text}
+        {ayah_text}
       </Text>
     </View>
   );

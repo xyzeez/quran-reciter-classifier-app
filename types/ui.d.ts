@@ -61,15 +61,19 @@ export interface ListTitleProps {
 }
 
 export interface QuranVerseDisplayProps {
-  text: string;
-  ayahNumber: string;
+  ayah_text: string;
+  ayah_number: string;
+  surah_name_en: string;
+  surah_number: string;
+  surah_number_en: number | string;
+  encode: string;
 }
 
 export interface SurahTitleDisplayProps {
-  surahNumberArabic: string;
-  surahNumberEnglish: string;
-  surahNameArabic: string;
-  surahNameEnglish?: string;
+  surah_number: string;
+  surah_number_en: number | string;
+  surah_name: string;
+  surah_name_en?: string;
 }
 
 export interface CircularConfidenceLoaderProps {
@@ -83,9 +87,9 @@ export interface CircularConfidenceLoaderProps {
 
 export interface SurahListItemProps {
   active?: boolean;
-  surahNameArabic: string;
-  surahNameEnglish: string;
-  ayahNumberArabic: string;
-  ayahNumberEnglish: string;
-  text: string;
+  surah_name: string;
+  surah_name_en: string;
+  ayah_number: string;
+  ayah_number_en: string | number;
+  ayah_text: string;
 }

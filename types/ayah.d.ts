@@ -1,14 +1,12 @@
 export interface Ayah {
-  surahNumber: number;
-  surahName: {
-    arabic: string;
-    english: string;
-  };
-  ayahNumber: {
-    arabic: string;
-    english: string;
-  };
-  text: string;
+  surah_number: string;
+  surah_number_en: number;
+  surah_name: string;
+  surah_name_en: string;
+  ayah_number: string;
+  ayah_number_en: number;
+  ayah_text: string;
+  encode: string;
 }
 
 export interface AyahPrediction {
