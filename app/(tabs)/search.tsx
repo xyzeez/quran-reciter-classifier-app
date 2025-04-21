@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   footer: {
-    height: 216,
+    height: 96,
   },
 });
 
