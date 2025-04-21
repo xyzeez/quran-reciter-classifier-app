@@ -2,6 +2,7 @@ import colors from "@/constants/colors";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ReciterListItemProps } from "@/types/reciter";
+import CircularConfidenceLoader from "./CircularConfidenceLoader";
 
 const styles = StyleSheet.create({
   container: {
@@ -73,18 +74,10 @@ const styles = StyleSheet.create({
   confidence: {
     width: 45,
     height: 45,
-    backgroundColor: colors.greenLight,
+    backgroundColor: colors.white,
     borderRadius: 9999,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.green,
-  },
-  confidenceText: {
-    fontSize: 12,
-    fontFamily: "Poppins_600SemiBold",
-    color: colors.green,
-    marginTop: 4,
   },
 });
 
@@ -122,7 +115,11 @@ const ReciterPredictionItem = ({
         </View>
       </View>
       <View style={styles.confidence}>
-        <Text style={styles.confidenceText}>{confidence}%</Text>
+        <CircularConfidenceLoader
+          confidence={confidence}
+          size={45}
+          textSize={12}
+        />
       </View>
     </View>
   );

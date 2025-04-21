@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { ViewStyle } from "react-native";
 
 export interface ReciterSearchBarProps {
   value: string;
@@ -69,6 +70,15 @@ export interface SurahTitleDisplayProps {
   surahNumberEnglish: string;
   surahNameArabic: string;
   surahNameEnglish?: string;
+}
+
+export interface CircularConfidenceLoaderProps {
+  confidence: number;
+  size?: number;
+  strokeWidth?: number;
+  textSize?: number;
+  style?: ViewStyle;
+  animated?: boolean;
 }
 
 export interface SurahListItemProps {
