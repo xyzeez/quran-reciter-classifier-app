@@ -12,7 +12,6 @@ const reciters = [
     flagUrl: "https://flagcdn.com/w320/kw.png",
     imageUrl: "https://i.imgur.com/JhzBTkP.png",
     serverUrl: "https://server.mp3quran.net/afs",
-    recordings: 1500,
   },
   {
     id: "2",
@@ -23,7 +22,6 @@ const reciters = [
     flagUrl: "https://flagcdn.com/w320/sa.png",
     imageUrl: "https://i.imgur.com/rh00Fju.png",
     serverUrl: "https://server.mp3quran.net/sudais",
-    recordings: 1250,
   },
   {
     id: "3",
@@ -34,7 +32,6 @@ const reciters = [
     flagUrl: "https://flagcdn.com/w320/sa.png",
     imageUrl: "https://i.imgur.com/PTdBhWt.png",
     serverUrl: "https://server.mp3quran.net/shr",
-    recordings: 980,
   },
   {
     id: "4",
@@ -45,7 +42,6 @@ const reciters = [
     flagUrl: "https://flagcdn.com/w320/sa.png",
     imageUrl: "https://i.imgur.com/vPVfaQt.png",
     serverUrl: "https://server.mp3quran.net/maher",
-    recordings: 850,
   },
   {
     id: "5",
@@ -56,7 +52,6 @@ const reciters = [
     flagUrl: "https://flagcdn.com/w320/eg.png",
     imageUrl: "https://i.imgur.com/19MY9qZ.png",
     serverUrl: "https://server.mp3quran.net/minsh",
-    recordings: 1200,
   },
   {
     id: "6",
@@ -68,7 +63,6 @@ const reciters = [
     imageUrl:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
     serverUrl: "https://server.mp3quran.net/hani",
-    recordings: 1300,
   },
   {
     id: "7",
@@ -80,7 +74,6 @@ const reciters = [
     imageUrl:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
     serverUrl: "https://server.mp3quran.net/husary",
-    recordings: 2000,
   },
 ];
 
