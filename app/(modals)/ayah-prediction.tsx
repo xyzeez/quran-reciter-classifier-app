@@ -18,6 +18,9 @@ import { useRoute } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ayahService } from "@/services/ayahService";
+import { ErrorScreen } from "@/components/ErrorScreen";
+import { EmptyStateScreen } from "@/components/EmptyStateScreen";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 // Define a type for the route params
 type AyahPredictionRouteProp = RouteProp<
@@ -43,90 +46,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 12,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 16,
-  },
-  loadingText: {
-    fontFamily: "Poppins_400Regular",
-    color: colors.green,
-    fontSize: 16,
-  },
-  notFoundContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-  notFoundIcon: {
-    width: 120,
-    height: 120,
-    backgroundColor: colors.white,
-    borderRadius: 60,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-  },
-  notFoundTitle: {
-    fontSize: 24,
-    fontFamily: "Poppins_600SemiBold",
-    color: colors.green,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  notFoundDescription: {
-    fontSize: 16,
-    fontFamily: "Poppins_400Regular",
-    color: colors.grey,
-    textAlign: "center",
-    lineHeight: 24,
-  },
-  tryAgainButton: {
-    backgroundColor: colors.green,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 9999,
-    marginTop: 32,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  tryAgainText: {
-    color: colors.white,
-    fontSize: 16,
-    fontFamily: "Poppins_600SemiBold",
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-  errorIcon: {
-    width: 120,
-    height: 120,
-    backgroundColor: colors.white,
-    borderRadius: 60,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-  },
-  errorTitle: {
-    fontSize: 24,
-    fontFamily: "Poppins_600SemiBold",
-    color: colors.red,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  errorDescription: {
-    fontSize: 16,
-    fontFamily: "Poppins_400Regular",
-    color: colors.grey,
-    textAlign: "center",
-    lineHeight: 24,
   },
 });
 
@@ -185,10 +104,7 @@ const AyahPrediction = () => {
     return (
       <View style={styles.container}>
         <Tab title="Ayah Identified" />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.green} />
-          <Text style={styles.loadingText}>Identifying Ayah...</Text>
-        </View>
+        <LoadingScreen message="Identifying Ayah..." />
       </View>
     );
   }
@@ -197,20 +113,12 @@ const AyahPrediction = () => {
     return (
       <View style={styles.container}>
         <Tab title="Ayah Identified" />
-        <View style={styles.errorContainer}>
-          <View style={styles.errorIcon}>
-            <Ionicons name={error.icon} size={60} color={colors.red} />
-          </View>
-          <Text style={styles.errorTitle}>{error.title}</Text>
-          <Text style={styles.errorDescription}>{error.description}</Text>
-          <TouchableOpacity
-            style={styles.tryAgainButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="refresh" size={20} color={colors.white} />
-            <Text style={styles.tryAgainText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorScreen
+          title={error.title}
+          description={error.description}
+          iconName={error.icon}
+          onButtonPress={() => router.back()}
+        />
       </View>
     );
   }
@@ -219,23 +127,12 @@ const AyahPrediction = () => {
     return (
       <View style={styles.container}>
         <Tab title="Ayah Identified" />
-        <View style={styles.notFoundContainer}>
-          <View style={styles.notFoundIcon}>
-            <Ionicons name="book-outline" size={60} color={colors.green} />
-          </View>
-          <Text style={styles.notFoundTitle}>Ayah Not Identified</Text>
-          <Text style={styles.notFoundDescription}>
-            We couldn't identify the ayah with confidence. The audio might be
-            unclear or the recitation may not match our database.
-          </Text>
-          <TouchableOpacity
-            style={styles.tryAgainButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="refresh" size={20} color={colors.white} />
-            <Text style={styles.tryAgainText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
+        <EmptyStateScreen
+          title="Ayah Not Identified"
+          description="We couldn't identify the ayah with confidence. The audio might be unclear or the recitation may not match our database."
+          iconName="book-outline"
+          onButtonPress={() => router.back()}
+        />
       </View>
     );
   }

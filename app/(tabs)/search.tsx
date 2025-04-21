@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useState, useMemo, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ReciterCard } from "@/components/ReciterCard";
-import { SearchHeader } from "@/components/SearchHeader";
 import { reciterService } from "@/services/reciterService";
 import { Reciter } from "@/types/reciter";
+import { SectionListHeader } from "@/components/SectionListHeader";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +30,23 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
     marginBottom: 16,
+  },
+  searchHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+  },
+  countContainer: {
+    backgroundColor: colors.greenLight,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  count: {
+    fontSize: 12,
+    fontFamily: "Poppins_500Medium",
+    color: colors.green,
   },
   listContainer: {
     flex: 1,
@@ -87,12 +104,17 @@ const Search = () => {
         onChangeText={handleSearch}
         placeholder="Search reciters..."
       />
-      <SearchHeader query={searchQuery} count={filteredReciters.length} />
+      <SectionListHeader
+        title={
+          searchQuery ? `Search results for: ${searchQuery}` : "All reciters"
+        }
+        count={filteredReciters.length}
+      />
       <ScrollView style={styles.listContainer}>
         <View style={styles.reciterList}>
           {filteredReciters.length > 0 ? (
             filteredReciters.map((reciter) => (
-              <ReciterCard key={reciter.id} {...reciter} />
+              <ReciterCard key={reciter.name} {...reciter} />
             ))
           ) : (
             <Text style={styles.noResults}>No reciters found</Text>

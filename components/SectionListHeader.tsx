@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { colors } from "@/constants/colors";
 
-interface SearchHeaderProps {
-  query: string;
-  count: number;
+interface SectionListHeaderProps {
+  title: string;
+  count?: number;
 }
 
 const styles = StyleSheet.create({
@@ -11,11 +12,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 24,
+    marginTop: 16,
     marginBottom: 16,
   },
-  text: {
-    fontSize: 14,
+  title: {
+    fontSize: 18,
     fontFamily: "Poppins_400Regular",
     color: colors.grey,
   },
@@ -38,16 +39,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export function SearchHeader({ query, count }: SearchHeaderProps) {
+export const SectionListHeader: React.FC<SectionListHeaderProps> = ({
+  title,
+  count,
+}) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        {query ? `Search results for: ${query}` : "All reciters"}
-      </Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.separator} />
-      <View style={styles.countContainer}>
-        <Text style={styles.count}>{count}</Text>
-      </View>
+      {count !== undefined && (
+        <View style={styles.countContainer}>
+          <Text style={styles.count}>{count}</Text>
+        </View>
+      )}
     </View>
   );
-}
+};
