@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { Reciter } from "@/types/reciter";
 import { Ionicons } from "@expo/vector-icons";
 import CircularConfidenceLoader from "./CircularConfidenceLoader";
@@ -7,97 +7,110 @@ import CircularConfidenceLoader from "./CircularConfidenceLoader";
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 16,
+    paddingVertical: 48,
+    paddingHorizontal: 16,
+  },
+  imageContainer: {
+    position: "relative",
+    marginBottom: 16,
   },
   image: {
-    width: 120,
-    height: 120,
-    borderRadius: 9999,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 3,
+    borderColor: colors.green + "20", // 20% opacity
   },
-  confidence: {
+  confidenceContainer: {
     position: "absolute",
-    bottom: -5,
-    right: -5,
-    width: 45,
-    height: 45,
-    backgroundColor: colors.white,
-    borderRadius: 9999,
+    bottom: -10,
+    right: -10,
+  },
+  contentContainer: {
+    width: "100%",
     alignItems: "center",
-    justifyContent: "center",
   },
   name: {
     fontFamily: "Poppins_600SemiBold",
-    fontSize: 20,
+    fontSize: 22,
     color: colors.green,
     textAlign: "center",
+    marginBottom: 12,
   },
-  innerContainer: {
-    gap: 8,
-  },
-  detailsContainer: {
+  detailsRow: {
     flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  nationalityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.greenLight,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
   flag: {
-    width: 24,
-    height: 16,
-    borderRadius: 9999,
+    width: 22,
+    height: 14,
+    borderRadius: 2,
+    marginRight: 8,
   },
   nationality: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins_500Medium",
     fontSize: 14,
-    color: colors.black,
-    textAlign: "center",
+    color: colors.green,
   },
-  recordingsContainer: {
+  listenButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    gap: 4,
+    backgroundColor: colors.green,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 6,
   },
-  recordingsCount: {
-    fontSize: 12,
+  listenText: {
     fontFamily: "Poppins_500Medium",
-    color: colors.black,
+    fontSize: 14,
+    color: colors.white,
   },
 });
 
 const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.imageContainer}>
         <Image source={{ uri: reciter.imageUrl }} style={styles.image} />
-        <View style={styles.confidence}>
+        <View style={styles.confidenceContainer}>
           <CircularConfidenceLoader
             confidence={reciter.confidence}
-            size={45}
+            size={50}
             textSize={16}
           />
         </View>
       </View>
-      <View style={styles.innerContainer}>
+
+      <View style={styles.contentContainer}>
         <Text style={styles.name} numberOfLines={2} ellipsizeMode="tail">
           {reciter.name}
         </Text>
-        <View style={styles.detailsContainer}>
-          <View style={styles.recordingsContainer}>
+
+        <View style={styles.detailsRow}>
+          <View style={styles.nationalityContainer}>
             <Image
               style={styles.flag}
               source={{ uri: reciter.flagUrl }}
               resizeMode="cover"
             />
-            <Text style={styles.recordingsCount}>{reciter.nationality}</Text>
+            <Text style={styles.nationality}>{reciter.nationality}</Text>
           </View>
-          <View style={styles.recordingsContainer}>
-            <Ionicons name="play" size={14} color={colors.green} />
-            <Text style={styles.recordingsCount}>Listen</Text>
-          </View>
+
+          <Pressable style={styles.listenButton}>
+            <Ionicons name="play-circle" size={18} color={colors.white} />
+            <Text style={styles.listenText}>Listen</Text>
+          </Pressable>
         </View>
       </View>
     </View>
