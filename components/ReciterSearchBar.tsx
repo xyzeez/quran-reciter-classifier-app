@@ -35,6 +35,7 @@ const ReciterSearchBar = ({
         onChangeText={onChangeText}
         placeholder={placeholder}
         style={styles.input}
+        cursorColor={colors.green}
       />
     </View>
   );
