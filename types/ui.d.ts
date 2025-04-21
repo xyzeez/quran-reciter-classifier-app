@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ViewStyle } from "react-native";
+import { ViewStyle, ScrollView } from "react-native";
+import React from "react";
 
 export interface ReciterSearchBarProps {
   value: string;
@@ -67,6 +68,8 @@ export interface QuranVerseDisplayProps {
   surah_number: string;
   surah_number_en: number | string;
   encode: string;
+  isSingleResult?: boolean;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 export interface SurahTitleDisplayProps {
@@ -91,5 +94,7 @@ export interface SurahListItemProps {
   surah_name_en: string;
   surah_number: string; // Arabic Surah Number
   surah_number_en: string | number; // English Surah Number
+  ayah_number: string; // Ayah number within the Surah
   ayah_text: string;
+  onPress?: () => void; // Handler for when the item is pressed
 }

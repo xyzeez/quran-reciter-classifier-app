@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+} from "react-native";
 import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -118,14 +125,30 @@ const QuranVerseDisplay = ({
   surah_number,
   surah_number_en,
   encode,
+  isSingleResult = false,
+  scrollViewRef,
 }: QuranVerseDisplayProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
-  const numberOfLines = isExpanded ? undefined : 7;
+
+  const applyTruncation = showReadMore && !isSingleResult;
+
+  const numberOfLines = applyTruncation && !isExpanded ? 7 : undefined;
 
   const handleTextLayout = (event: any) => {
-    const { lines } = event.nativeEvent;
-    setShowReadMore(lines.length > 10);
+    if (!isSingleResult) {
+      const { lines } = event.nativeEvent;
+      setShowReadMore(lines.length > 7);
+    }
+  };
+
+  const handleToggleExpand = () => {
+    const collapsing = isExpanded;
+    setIsExpanded(!isExpanded);
+
+    if (collapsing && scrollViewRef?.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
   };
 
   return (
@@ -133,9 +156,9 @@ const QuranVerseDisplay = ({
       style={[
         styles.container,
         {
-          borderBottomWidth: showReadMore ? 1 : 0,
-          borderColor: showReadMore ? colors.greyLight : "transparent",
-          paddingBottom: showReadMore ? 24 : 0,
+          borderBottomWidth: applyTruncation ? 1 : 0,
+          borderColor: applyTruncation ? colors.greyLight : "transparent",
+          paddingBottom: applyTruncation ? 24 : 0,
         },
       ]}
     >
@@ -177,12 +200,9 @@ const QuranVerseDisplay = ({
         <Text style={styles.ayahNumber}>{ayah_number}</Text>
       </Text>
 
-      {showReadMore && (
+      {applyTruncation && (
         <View style={styles.readMoreButton}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setIsExpanded(!isExpanded)}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleToggleExpand}>
             <Ionicons
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={20}

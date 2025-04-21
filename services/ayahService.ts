@@ -106,10 +106,12 @@ const ayahService = {
 
         // 75% chance of reliable prediction
         if (random < 0.75) {
+          const matched = processedAyahs[0];
+          const similar = processedAyahs.slice(1);
           resolve({
             reliable: true,
-            matchedAyah: processedAyahs[0],
-            similarAyahs: processedAyahs.slice(1),
+            matchedAyah: matched,
+            similarAyahs: [matched, ...similar],
           });
         }
         // 20% chance of unreliable prediction
