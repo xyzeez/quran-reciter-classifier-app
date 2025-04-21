@@ -20,6 +20,14 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
   },
+  timerText: {
+    fontSize: 20,
+    fontFamily: "Poppins_500Medium",
+    color: colors.grey,
+    marginTop: 8,
+    minWidth: 60,
+    textAlign: "center",
+  },
   buttonContainer: {
     position: "relative",
     width: 200,
@@ -48,19 +56,29 @@ const styles = StyleSheet.create({
   },
 });
 
+const formatDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  const paddedMinutes = String(minutes).padStart(2, "0");
+  const paddedSeconds = String(remainingSeconds).padStart(2, "0");
+  return `${paddedMinutes}:${paddedSeconds}`;
+};
+
 const Recorder = ({
   onRecordingComplete,
   recordingOptions = Audio.RecordingOptionsPresets.HIGH_QUALITY,
+  maxDurationSeconds,
 }: RecorderProps) => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordingDuration, setRecordingDuration] = useState<number>(0);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pulseAnimationRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    let animation: Animated.CompositeAnimation | null = null;
-
     if (recording) {
-      animation = Animated.loop(
+      pulseAnimationRef.current = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.3,
@@ -74,19 +92,42 @@ const Recorder = ({
           }),
         ])
       );
-      animation.start();
+      pulseAnimationRef.current.start();
+
+      setRecordingDuration(0);
+      intervalRef.current = setInterval(() => {
+        setRecordingDuration((prevDuration) => {
+          const newDuration = prevDuration + 1;
+          if (maxDurationSeconds && newDuration >= maxDurationSeconds) {
+            stopRecording();
+          }
+          return newDuration;
+        });
+      }, 1000);
     } else {
-      if (animation) {
-        animation.stop();
+      if (pulseAnimationRef.current) {
+        pulseAnimationRef.current.stop();
+        pulseAnimationRef.current = null;
       }
       pulseAnim.setValue(1);
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setRecordingDuration(0);
     }
 
     return () => {
-      if (animation) {
-        animation.stop();
+      if (pulseAnimationRef.current) {
+        pulseAnimationRef.current.stop();
+        pulseAnimationRef.current = null;
       }
       pulseAnim.setValue(1);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
   }, [recording, pulseAnim]);
 
@@ -121,12 +162,21 @@ const Recorder = ({
   }
 
   async function stopRecording() {
-    if (!recording) return;
+    if (!recording || intervalRef.current === null) return;
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    const currentRecording = recording;
+    setRecording(null);
 
     try {
-      const uri = recording.getURI();
-      await recording.stopAndUnloadAsync();
-      setRecording(null);
+      const uri = currentRecording.getURI();
+      console.log("Stopping and unloading recording...");
+      await currentRecording.stopAndUnloadAsync();
+      console.log("Recording stopped and unloaded.");
 
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -134,7 +184,7 @@ const Recorder = ({
 
       if (uri && onRecordingComplete) {
         const fileName = uri.split("/").pop() || "audio.m4a";
-        console.log("Recording completed:", fileName);
+        console.log("Recording completed (max duration or manual):", fileName);
         console.log("File URI:", uri);
 
         await onRecordingComplete({
@@ -144,12 +194,11 @@ const Recorder = ({
         });
       }
     } catch (err: any) {
-      console.log("Error details:", {
+      console.error("Error during stopRecording:", {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status,
       });
-      setRecording(null);
     }
   }
 
@@ -177,7 +226,11 @@ const Recorder = ({
           />
         </Pressable>
       </View>
-      {!recording && (
+      {recording ? (
+        <Text style={styles.timerText}>
+          {formatDuration(recordingDuration)}
+        </Text>
+      ) : (
         <Text style={styles.heading}>Tap to record recitation</Text>
       )}
     </View>

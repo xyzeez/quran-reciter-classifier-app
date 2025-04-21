@@ -57,7 +57,10 @@ const Ayah = () => {
       <Text style={styles.text}>
         Record the recitation to identify which ayah is being recited
       </Text>
-      <Recorder onRecordingComplete={handleFileProcess} />
+      <Recorder
+        onRecordingComplete={handleFileProcess}
+        maxDurationSeconds={10}
+      />
     </View>
   );
 };

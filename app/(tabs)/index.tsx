@@ -96,7 +96,10 @@ const Index = () => {
         setFileInputType={setFileInputType}
       />
       {fileInputType === "record" && (
-        <Recorder onRecordingComplete={handleFileProcess} />
+        <Recorder
+          onRecordingComplete={handleFileProcess}
+          maxDurationSeconds={15}
+        />
       )}
       {fileInputType === "upload" && (
         <Uploader onFileUpload={handleFileProcess} />
