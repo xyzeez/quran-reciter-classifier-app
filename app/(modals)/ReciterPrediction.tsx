@@ -170,7 +170,7 @@ const ReciterPrediction = () => {
           <PredictedReciter reciter={prediction.mainPrediction} />
         )}
         <SectionListHeader
-          title={`Top ${prediction?.topPredictions?.length} Predictions`}
+          title="Top Predictions"
           count={prediction?.topPredictions?.length}
         />
         <View style={styles.reciterList}>
