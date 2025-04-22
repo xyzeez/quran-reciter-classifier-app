@@ -67,7 +67,7 @@ export interface QuranVerseDisplayProps {
   surah_name_en: string;
   surah_number: string;
   surah_number_en: number | string;
-  encode: string;
+  unicode: string;
   isSingleResult?: boolean;
   scrollViewRef?: React.RefObject<ScrollView>;
 }

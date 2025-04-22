@@ -6,7 +6,7 @@ export interface Ayah {
   ayah_number: string;
   ayah_number_en: number;
   ayah_text: string;
-  encode: string;
+  unicode: string;
 }
 
 export interface AyahPrediction {
