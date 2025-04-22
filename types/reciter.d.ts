@@ -1,6 +1,5 @@
 export interface Reciter {
   name: string;
-  confidence: number;
   nationality: string;
   flagUrl: string;
   imageUrl: string;
