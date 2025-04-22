@@ -1,5 +1,6 @@
 import { ReciterPrediction } from "@/types/predictions";
 import { Reciter } from "@/types/reciter";
+import { API_URL } from "../configs";
 
 // Mock data for reciter predictions
 const reciters = [
@@ -80,6 +81,7 @@ const reciters = [
 const reciterService = {
   // Get all reciters for search functionality
   getAllReciters(): Reciter[] {
+    // TODO: Consider fetching this from the server too if needed
     return reciters;
   },
 
@@ -88,33 +90,49 @@ const reciterService = {
     name: string;
     type: string;
   }): Promise<ReciterPrediction> {
-    // Simulate an API call with a delay
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Force error for testing
-        const random = 0.6; // Value > 0.95 will trigger error case
+    const formData = new FormData();
+    // Append the file using the 'audio' key expected by the server
+    // The type assertion is needed because TypeScript's FormData.append expects string | Blob
+    formData.append("audio", {
+      uri: audioFile.uri,
+      name: audioFile.name,
+      type: audioFile.type,
+    } as any); // Use 'any' for type assertion, adjust if a stricter type is possible/needed
 
-        // 80% chance of reliable prediction
-        if (random < 0.8) {
-          resolve({
-            reliable: true,
-            main_prediction: reciters[0],
-            top_predictions: reciters,
-          });
+    // Optional: Add parameters if needed, e.g., show_unreliable_predictions
+    // formData.append('show_unreliable_predictions', 'true');
+
+    try {
+      const response = await fetch(`${API_URL}/getReciter`, {
+        method: "POST",
+        body: formData,
+        // Headers might be needed depending on server config, especially 'Content-Type': 'multipart/form-data'
+        // However, fetch often sets this automatically for FormData. Add if issues occur.
+        // headers: {
+        //   'Content-Type': 'multipart/form-data',
+        // },
+      });
+
+      if (!response.ok) {
+        // Attempt to read error message from server response
+        let errorBody = {};
+        try {
+          errorBody = await response.json();
+        } catch (e) {
+          // Ignore if response body is not JSON
         }
-        // 15% chance of unreliable prediction
-        else if (random < 0.95) {
-          resolve({
-            reliable: false,
-            top_predictions: reciters,
-          });
-        }
-        // 5% chance of error
-        else {
-          reject(new Error("Failed to predict reciter"));
-        }
-      }, 2000); // 2 second delay to simulate loading
-    });
+        console.error("Server error response:", errorBody);
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const result: ReciterPrediction = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error predicting reciter:", error);
+      // Re-throw the error to be handled by the caller (e.g., UI)
+      // You might want to return a specific error structure or handle it differently
+      throw error;
+    }
   },
 };
 

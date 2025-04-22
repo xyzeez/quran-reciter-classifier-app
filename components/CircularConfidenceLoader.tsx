@@ -105,7 +105,7 @@ const CircularConfidenceLoader: React.FC<CircularConfidenceLoaderProps> = ({
           },
         ]}
       >
-        {normalizedConfidence}%
+        {Math.floor(normalizedConfidence)}%
       </Text>
     </View>
   );
