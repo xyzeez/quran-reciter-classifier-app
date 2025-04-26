@@ -1,10 +1,10 @@
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Button } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "@/constants/colors";
 import PredictedReciter from "@/components/PredictedReciter";
 import { Reciter } from "@/types/reciter";
 import ReciterPredictionItem from "@/components/ReciterPredictionItem";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import reciterService from "@/services/reciterService";
 import { useRoute } from "@react-navigation/native";
 import ErrorScreen from "@/components/ErrorScreen";
@@ -14,6 +14,14 @@ import SectionListHeader from "@/components/SectionListHeader";
 import NavigationTab from "@/components/NavigationTab";
 import { ReciterPredictionRouteProp } from "@/types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { Text } from "react-native";
+import ReciterAudioPlayer from "@/components/ReciterAudioPlayer";
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +37,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     height: 16,
+  },
+  bottomSheetContainer: {
+    flex: 1,
   },
 });
 
@@ -52,6 +63,32 @@ const ReciterPrediction = () => {
       | "globe-outline";
     errorColor?: string;
   } | null>(null);
+
+  const sheetRef = useRef<BottomSheet>(null);
+
+  // callbacks
+  const handleSheetChange = useCallback((index: number) => {
+    console.log("handleSheetChange", index);
+  }, []);
+  const handleSnapPress = useCallback((index: number) => {
+    sheetRef.current?.snapToIndex(index);
+  }, []);
+  const handleClosePress = useCallback(() => {
+    sheetRef.current?.close();
+  }, []);
+
+  // backdrop component
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+      />
+    ),
+    []
+  );
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -161,27 +198,42 @@ const ReciterPrediction = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <NavigationTab title="Reciter Prediction" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {prediction?.mainPrediction && (
-          <PredictedReciter reciter={prediction.mainPrediction} />
-        )}
-        <SectionListHeader
-          title="Top Predictions"
-          count={prediction?.topPredictions?.length}
-        />
-        <View style={styles.reciterList}>
-          {prediction?.topPredictions?.map((reciter, index) => (
-            <ReciterPredictionItem key={index} {...reciter} />
-          ))}
-        </View>
-        <View style={styles.footer} />
-      </ScrollView>
-    </SafeAreaView>
+    <GestureHandlerRootView style={styles.bottomSheetContainer}>
+      <SafeAreaView style={styles.container}>
+        <NavigationTab title="Reciter Prediction" />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {prediction?.mainPrediction && (
+            <PredictedReciter
+              reciter={prediction.mainPrediction}
+              listenHandler={() => handleSnapPress(0)}
+            />
+          )}
+          <SectionListHeader
+            title="Top Predictions"
+            count={prediction?.topPredictions?.length}
+          />
+          <View style={styles.reciterList}>
+            {prediction?.topPredictions?.map((reciter, index) => (
+              <ReciterPredictionItem key={index} {...reciter} />
+            ))}
+          </View>
+          <View style={styles.footer} />
+        </ScrollView>
+        <BottomSheet
+          ref={sheetRef}
+          onChange={handleSheetChange}
+          backdropComponent={renderBackdrop}
+          index={-1}
+        >
+          <BottomSheetView>
+            <ReciterAudioPlayer />
+          </BottomSheetView>
+        </BottomSheet>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

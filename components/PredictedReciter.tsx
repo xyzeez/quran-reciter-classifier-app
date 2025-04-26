@@ -78,7 +78,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
+const PredictedReciter = ({
+  reciter,
+  listenHandler,
+}: {
+  reciter: Reciter;
+  listenHandler: () => void;
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -107,7 +113,7 @@ const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
             <Text style={styles.nationality}>{reciter.nationality}</Text>
           </View>
 
-          <Pressable style={styles.listenButton}>
+          <Pressable style={styles.listenButton} onPress={listenHandler}>
             <Ionicons name="play-circle" size={18} color={colors.white} />
             <Text style={styles.listenText}>Listen</Text>
           </Pressable>
