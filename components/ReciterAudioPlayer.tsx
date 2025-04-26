@@ -12,22 +12,37 @@ import { Audio, AVPlaybackStatus, AVPlaybackStatusSuccess } from "expo-av";
 import colors from "@/constants/colors";
 import ActionButton from "./ActionButton";
 
-// Test data for development
-const reciterData = {
-  confidence: 0.951532371788925957,
-  flagUrl: "https://flagcdn.com/w40/eg.png",
-  imageUrl:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
-  name: "Mahmoud Khalil Al-Hussary",
-  nationality: "Egypt",
-  serverUrl: "https://quran.ksu.edu.sa/ayat/mp3/Husary_64kbps/",
+// Demo audio data for surah and ayah
+const defaultAudioInfo = {
+  surahNumber: 10,
+  ayahNumber: 10,
+  surahName: "Yunus",
 };
 
-const audioUrl = "https://everyayah.com/data/Alafasy_128kbps/001001.mp3";
-const surahName = "Al-Fatiha";
-const ayahNumber = 1;
+// Default reciter data for development/fallback
+const defaultReciterData = {
+  confidence: 99.26,
+  flagUrl: "https://flagcdn.com/w40/kw.png",
+  imageUrl:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/449px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
+  name: "Mishary Alafasi",
+  nationality: "Kuwait",
+  serverUrl: "https://everyayah.com/data/Alafasy_128kbps/",
+};
 
-const ReciterAudioPlayer = () => {
+export interface ReciterAudioPlayerProps {
+  reciter?: {
+    name: string;
+    nationality: string;
+    imageUrl: string;
+    confidence: number;
+    serverUrl?: string;
+  };
+}
+
+const ReciterAudioPlayer = ({
+  reciter = defaultReciterData,
+}: ReciterAudioPlayerProps) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +54,69 @@ const ReciterAudioPlayer = () => {
   const shouldPlayAfterSeek = useRef(false);
   const soundRef = useRef<Audio.Sound | null>(null);
 
+  const { surahNumber, ayahNumber, surahName } = defaultAudioInfo;
+
+  // Construct the audio URL based on reciter's serverUrl
+  const getAudioUrl = () => {
+    // Use reciter's serverUrl if available, otherwise use default
+    const baseUrl = reciter.serverUrl || defaultReciterData.serverUrl;
+
+    // Format surah and ayah numbers with leading zeros
+    const formattedSurah = String(surahNumber).padStart(3, "0");
+    const formattedAyah = String(ayahNumber).padStart(3, "0");
+
+    // Check if the URL already ends with a slash, if not add one
+    const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+
+    // Try to fix SSL issues by converting to HTTP if needed
+    const secureBaseUrl = normalizedBaseUrl.replace("https://", "http://");
+
+    // Different APIs use different URL structures, try to detect pattern
+    let finalUrl;
+    if (secureBaseUrl.includes("everyayah.com")) {
+      // everyayah.com uses pattern: baseUrl/001001.mp3
+      finalUrl = `${secureBaseUrl}${formattedSurah}${formattedAyah}.mp3`;
+    } else if (secureBaseUrl.includes("quran.ksu.edu.sa")) {
+      // quran.ksu.edu.sa uses pattern: baseUrl/001001.mp3
+      finalUrl = `${secureBaseUrl}${formattedSurah}${formattedAyah}.mp3`;
+    } else {
+      // Generic fallback for other APIs
+      finalUrl = `${secureBaseUrl}${formattedSurah}${formattedAyah}.mp3`;
+    }
+
+    // Log the final URL for debugging
+    console.log("🔊 Loading audio from URL:", finalUrl);
+    console.log("🎙️ Reciter:", reciter.name);
+    console.log("🔗 Original server URL:", baseUrl);
+
+    return finalUrl;
+  };
+
+  // Define a fallback URL if the main one fails
+  const getFallbackUrl = () => {
+    // Always use a known working source as fallback
+    const fallbackBaseUrl = "http://everyayah.com/data/";
+    const reciterCode = reciter.name.includes("Alafasi")
+      ? "Alafasy_128kbps"
+      : reciter.name.includes("Hussar")
+        ? "Husary_128kbps"
+        : reciter.name.includes("Minshawi")
+          ? "Minshawy_Murattal_128kbps"
+          : reciter.name.includes("Abdulsamad")
+            ? "Abdul_Basit_Murattal_64kbps"
+            : reciter.name.includes("Shuraim")
+              ? "Saood_ash-Shuraym_64kbps"
+              : "Alafasy_128kbps"; // Default to Alafasy if no match
+
+    const formattedSurah = String(surahNumber).padStart(3, "0");
+    const formattedAyah = String(ayahNumber).padStart(3, "0");
+
+    return `${fallbackBaseUrl}${reciterCode}/${formattedSurah}${formattedAyah}.mp3`;
+  };
+
+  const audioUrl = getAudioUrl();
+  const fallbackUrl = getFallbackUrl();
+
   const formatTime = (millis: number | null): string => {
     if (millis === null) return "--:--";
     const totalSeconds = Math.floor(millis / 1000);
@@ -49,6 +127,54 @@ const ReciterAudioPlayer = () => {
 
   useEffect(() => {
     let isMounted = true;
+
+    // Define the playback status update handler
+    const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+      if (!isMounted) return;
+
+      if (!status.isLoaded) {
+        if (status.error) {
+          setError(`Unable to play audio`);
+          console.error("Playback Error:", status.error);
+          setIsLoading(false);
+          setIsPlaying(false);
+          setIsReady(false);
+        }
+        return;
+      }
+
+      const successStatus = status as AVPlaybackStatusSuccess;
+
+      if (successStatus.isBuffering) {
+        setIsLoading(true);
+      } else {
+        setIsLoading(false);
+        setIsReady(true);
+      }
+
+      if (!isSeeking.current) {
+        setPositionMillis(successStatus.positionMillis);
+      }
+
+      setDurationMillis(successStatus.durationMillis ?? null);
+      setIsPlaying(successStatus.isPlaying);
+
+      // Handle audio finishing playback more smoothly
+      if (successStatus.didJustFinish && !successStatus.isLooping) {
+        // Set playing state to false when finished
+        setIsPlaying(false);
+
+        // Set position to 0 to show start state in UI
+        setPositionMillis(0);
+
+        // Without calling any additional methods on the sound object
+        // This prevents the audio from automatically restarting
+        console.log("Audio playback completed");
+      }
+
+      setError(null);
+    };
+
     const loadAudio = async () => {
       try {
         setIsLoading(true);
@@ -67,68 +193,93 @@ const ReciterAudioPlayer = () => {
           playThroughEarpieceAndroid: false,
         });
 
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: audioUrl },
-          {
-            shouldPlay: false,
-            progressUpdateIntervalMillis: 50,
-          },
-          (status) => {
-            if (!isMounted) return;
+        // First try with the primary URL
+        try {
+          console.log("Attempting to load primary URL:", audioUrl);
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            { uri: audioUrl },
+            {
+              shouldPlay: false,
+              progressUpdateIntervalMillis: 50,
+            },
+            handlePlaybackStatusUpdate
+          );
 
-            if (!status.isLoaded) {
-              if (status.error) {
-                setError(`Unable to play audio`);
-                console.error("Playback Error:", status.error);
-                setIsLoading(false);
-                setIsPlaying(false);
-                setIsReady(false);
-              }
-              return;
+          if (isMounted) {
+            console.log("✅ Primary URL loaded successfully:", audioUrl);
+            // Cleanup previous sound instance
+            if (soundRef.current) {
+              await soundRef.current.stopAsync();
+              await soundRef.current.unloadAsync();
             }
+            soundRef.current = newSound;
+            setSound(newSound);
+            setIsReady(true);
+            setIsLoading(false);
 
-            const successStatus = status as AVPlaybackStatusSuccess;
-
-            if (successStatus.isBuffering) {
-              setIsLoading(true);
-            } else {
-              setIsLoading(false);
-              setIsReady(true);
+            // Start playing automatically when loaded
+            try {
+              await newSound.playAsync();
+              setIsPlaying(true);
+              console.log("🎵 Auto-play started");
+            } catch (playError) {
+              console.error("Failed to auto-play:", playError);
+              // Continue without auto-play if there's an error
             }
+          }
+        } catch (primaryError: any) {
+          // If primary URL fails, try fallback
+          const errorMessage = primaryError?.message || "Unknown error";
 
-            if (!isSeeking.current) {
-              setPositionMillis(successStatus.positionMillis);
-            }
+          // Check for common error codes
+          if (errorMessage.includes("503")) {
+            console.warn(
+              "⚠️ Primary URL server unavailable (503), trying fallback. This is normal and handled automatically."
+            );
+          } else {
+            console.error("❌ Primary URL error:", primaryError);
+          }
 
-            setDurationMillis(successStatus.durationMillis ?? null);
-            setIsPlaying(successStatus.isPlaying);
+          try {
+            console.log("🔄 Trying fallback URL:", fallbackUrl);
+            const { sound: fallbackSound } = await Audio.Sound.createAsync(
+              { uri: fallbackUrl },
+              {
+                shouldPlay: false,
+                progressUpdateIntervalMillis: 50,
+              },
+              handlePlaybackStatusUpdate
+            );
 
-            if (successStatus.didJustFinish && !successStatus.isLooping) {
-              setIsPlaying(false);
-              setPositionMillis(0);
-
-              // Reset audio position on finish
+            if (isMounted) {
+              console.log("✅ Fallback URL loaded successfully:", fallbackUrl);
+              // Cleanup previous sound instance
               if (soundRef.current) {
-                soundRef.current.stopAsync().then(() => {
-                  soundRef.current?.setPositionAsync(0);
-                });
+                await soundRef.current.stopAsync();
+                await soundRef.current.unloadAsync();
+              }
+              soundRef.current = fallbackSound;
+              setSound(fallbackSound);
+              setIsReady(true);
+              setIsLoading(false);
+
+              // Start playing automatically when loaded
+              try {
+                await fallbackSound.playAsync();
+                setIsPlaying(true);
+                console.log("🎵 Auto-play started (fallback)");
+              } catch (playError) {
+                console.error("Failed to auto-play fallback:", playError);
+                // Continue without auto-play if there's an error
               }
             }
-
-            setError(null);
+          } catch (fallbackError: any) {
+            // Both URLs failed
+            console.error("❌ Both primary and fallback URLs failed");
+            throw new Error(
+              `Audio unavailable: ${fallbackError?.message || "Unknown error"}`
+            );
           }
-        );
-
-        if (isMounted) {
-          // Cleanup previous sound instance
-          if (soundRef.current) {
-            await soundRef.current.stopAsync();
-            await soundRef.current.unloadAsync();
-          }
-          soundRef.current = newSound;
-          setSound(newSound);
-          setIsReady(true);
-          setIsLoading(false);
         }
       } catch (e: any) {
         console.error("Failed to load sound", e);
@@ -154,7 +305,7 @@ const ReciterAudioPlayer = () => {
         });
       }
     };
-  }, [audioUrl]);
+  }, [audioUrl, fallbackUrl]);
 
   const playPauseAudio = async () => {
     const currentSound = soundRef.current;
@@ -203,7 +354,27 @@ const ReciterAudioPlayer = () => {
     }
   };
 
-  const confidencePercent = Math.round(reciterData.confidence * 100);
+  // Normalize confidence value (ensure it's between 0-100)
+  // API values are already in percentage format, so don't multiply by 100
+  const normalizedConfidence =
+    reciter.confidence !== undefined
+      ? Math.min(100, Math.max(0, reciter.confidence))
+      : null; // No default value
+
+  const confidencePercent =
+    normalizedConfidence !== null ? Math.floor(normalizedConfidence) : null;
+
+  // Determine color based on confidence level
+  const getConfidenceColor = (value: number | null) => {
+    if (value === null) return colors.green;
+    if (value >= 80) return colors.green;
+    if (value >= 60) return "#88A044"; // Lighter green
+    if (value >= 40) return "#CCAA36"; // Yellow
+    if (value >= 20) return "#E67E22"; // Orange
+    return colors.red; // Red for low confidence
+  };
+
+  const confidenceColor = getConfidenceColor(normalizedConfidence);
 
   // Loading state
   if (isLoading) {
@@ -251,19 +422,23 @@ const ReciterAudioPlayer = () => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: reciterData.imageUrl }}
-          style={styles.reciterImage}
-        />
-        <View style={styles.confidenceContainer}>
-          <View style={styles.confidenceCircle}>
-            <Text style={styles.confidenceText}>{confidencePercent}%</Text>
+        <Image source={{ uri: reciter.imageUrl }} style={styles.reciterImage} />
+        {confidencePercent !== null && (
+          <View style={styles.confidenceContainer}>
+            <View
+              style={[
+                styles.confidenceCircle,
+                { backgroundColor: confidenceColor },
+              ]}
+            >
+              <Text style={styles.confidenceText}>{confidencePercent}%</Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
 
       <View style={styles.reciterInfoContainer}>
-        <Text style={styles.reciterName}>{reciterData.name}</Text>
+        <Text style={styles.reciterName}>{reciter.name}</Text>
         <View style={styles.surahInfoContainer}>
           <Ionicons name="book-outline" size={16} color={colors.green} />
           <Text style={styles.surahText}>

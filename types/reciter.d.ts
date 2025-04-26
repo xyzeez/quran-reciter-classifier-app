@@ -4,6 +4,7 @@ export interface Reciter {
   flagUrl: string;
   imageUrl: string;
   serverUrl: string;
+  confidence: number;
 }
 
 export interface ReciterListItemProps extends Reciter {

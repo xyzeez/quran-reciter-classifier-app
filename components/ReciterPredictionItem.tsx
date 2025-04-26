@@ -12,6 +12,13 @@ const ReciterPredictionItem = ({
   imageUrl,
   onPress,
 }: ReciterListItemProps) => {
+  const handleListen = () => {
+    // Call the onPress handler with the reciter data
+    if (onPress) {
+      onPress();
+    }
+  };
+
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
@@ -42,10 +49,10 @@ const ReciterPredictionItem = ({
               {nationality}
             </Text>
           </View>
-          <View style={styles.listenButton}>
+          <Pressable style={styles.listenButton} onPress={handleListen}>
             <Ionicons name="play-circle" size={14} color={colors.white} />
             <Text style={styles.listenText}>Listen</Text>
-          </View>
+          </Pressable>
         </View>
       </View>
 

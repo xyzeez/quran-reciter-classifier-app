@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, Button } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "@/constants/colors";
 import PredictedReciter from "@/components/PredictedReciter";
@@ -48,7 +48,7 @@ const ReciterPrediction = () => {
   const route = useRoute<ReciterPredictionRouteProp>();
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
-  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
   const [prediction, setPrediction] = useState<{
     reliable: boolean;
     mainPrediction?: Reciter;
@@ -65,19 +65,17 @@ const ReciterPrediction = () => {
   } | null>(null);
 
   const sheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["50%"], []);
 
-  // callbacks
   const handleSheetChange = useCallback((index: number) => {
     console.log("handleSheetChange", index);
   }, []);
-  const handleSnapPress = useCallback((index: number) => {
-    sheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleClosePress = useCallback(() => {
-    sheetRef.current?.close();
+
+  const handleSnapPress = useCallback((reciter: Reciter) => {
+    setSelectedReciter(reciter);
+    sheetRef.current?.snapToIndex(0);
   }, []);
 
-  // backdrop component
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -92,7 +90,6 @@ const ReciterPrediction = () => {
 
   useEffect(() => {
     const fetchPredictions = async () => {
-      setPredictionError(null);
       setIsLoading(true);
       try {
         if (fileParam) {
@@ -143,8 +140,6 @@ const ReciterPrediction = () => {
         }
       } catch (error: any) {
         console.error("Error fetching predictions:", error);
-
-        // Set error state
         setPrediction({
           reliable: false,
           errorTitle: "Connection Error",
@@ -208,7 +203,7 @@ const ReciterPrediction = () => {
           {prediction?.mainPrediction && (
             <PredictedReciter
               reciter={prediction.mainPrediction}
-              listenHandler={() => handleSnapPress(0)}
+              listenHandler={() => handleSnapPress(prediction.mainPrediction!)}
             />
           )}
           <SectionListHeader
@@ -217,7 +212,11 @@ const ReciterPrediction = () => {
           />
           <View style={styles.reciterList}>
             {prediction?.topPredictions?.map((reciter, index) => (
-              <ReciterPredictionItem key={index} {...reciter} />
+              <ReciterPredictionItem
+                key={index}
+                {...reciter}
+                onPress={() => handleSnapPress(reciter)}
+              />
             ))}
           </View>
           <View style={styles.footer} />
@@ -226,10 +225,19 @@ const ReciterPrediction = () => {
           ref={sheetRef}
           onChange={handleSheetChange}
           backdropComponent={renderBackdrop}
+          snapPoints={snapPoints}
           index={-1}
+          enablePanDownToClose={true}
+          handleIndicatorStyle={{
+            backgroundColor: colors.green,
+            width: 40,
+            height: 4,
+          }}
         >
           <BottomSheetView>
-            <ReciterAudioPlayer />
+            {selectedReciter && (
+              <ReciterAudioPlayer reciter={selectedReciter} />
+            )}
           </BottomSheetView>
         </BottomSheet>
       </SafeAreaView>
