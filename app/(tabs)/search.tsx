@@ -13,6 +13,7 @@ import reciterService from "@/services/reciterService";
 import { Reciter } from "@/types/reciter";
 import SectionListHeader from "@/components/SectionListHeader";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -93,7 +94,7 @@ const Search = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Explore Reciters"
         subtitle="Browse through our collection of renowned Quran reciters"
@@ -133,7 +134,7 @@ const Search = () => {
           </ScrollView>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -13,6 +13,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import SectionListHeader from "@/components/SectionListHeader";
 import NavigationTab from "@/components/NavigationTab";
 import { ReciterPredictionRouteProp } from "@/types/navigation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -123,16 +124,16 @@ const ReciterPrediction = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Reciter Prediction" />
         <LoadingScreen message="Analyzing audio..." />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (prediction?.errorTitle) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Reciter Prediction" />
         <ErrorScreen
           title={prediction.errorTitle}
@@ -141,13 +142,13 @@ const ReciterPrediction = () => {
           iconName={prediction.errorIcon || "alert-circle-outline"}
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!prediction?.reliable) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Reciter Prediction" />
         <EmptyStateScreen
           title="Reciter Not Identified"
@@ -155,12 +156,12 @@ const ReciterPrediction = () => {
           iconName="person-outline"
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <NavigationTab title="Reciter Prediction" />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -180,7 +181,7 @@ const ReciterPrediction = () => {
         </View>
         <View style={styles.footer} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

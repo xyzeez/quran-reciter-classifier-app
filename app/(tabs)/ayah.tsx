@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import Recorder from "@/components/Recorder";
 import { useRouter } from "expo-router";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +39,7 @@ const Ayah = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Identify the Ayah"
         subtitle="Record the recitation to identify which ayah is being recited"
@@ -47,7 +48,7 @@ const Ayah = () => {
         onRecordingComplete={handleFileProcess}
         maxDurationSeconds={10}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

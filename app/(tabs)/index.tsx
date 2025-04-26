@@ -7,6 +7,7 @@ import Uploader from "@/components/Uploader";
 import { useRouter } from "expo-router";
 import { Audio } from "expo-av";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +73,7 @@ const Index = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Identify the Qari"
         subtitle="Record or upload an audio file to identify the reciter"
@@ -91,7 +92,7 @@ const Index = () => {
         <Uploader onFileUpload={handleFileProcess} />
       )}
       {isProcessing && <ActivityIndicator size="large" color={colors.green} />}
-    </View>
+    </SafeAreaView>
   );
 };
 

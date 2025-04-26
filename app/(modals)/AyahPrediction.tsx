@@ -14,6 +14,7 @@ import EmptyStateScreen from "@/components/EmptyStateScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import { AyahPredictionRouteProp } from "@/types/navigation";
 import { Ayah } from "@/types/ayah"; // Use Ayah type
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -115,16 +116,16 @@ const AyahPrediction = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Ayah Identified" />
         <LoadingScreen message="Identifying Ayah..." />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Ayah Identified" />
         <ErrorScreen
           title={error.title}
@@ -133,14 +134,14 @@ const AyahPrediction = () => {
           buttonText="Go Back"
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Show empty state only if no ayah is available to display
   if (!displayedAyah) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <NavigationTab title="Ayah Identified" />
         <EmptyStateScreen
           title="Ayah Not Found"
@@ -149,13 +150,13 @@ const AyahPrediction = () => {
           buttonText="Go Back"
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Render the main content if an ayah (matched or similar) is available
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <NavigationTab title="Ayah Identified" />
       <ScrollView
         ref={scrollViewRef} // Assign the ref to the ScrollView
@@ -198,8 +199,7 @@ const AyahPrediction = () => {
                       surah_number={ayah.surah_number}
                       surah_number_en={ayah.surah_number_en}
                       ayah_number={ayah.ayah_number}
-                      ayah_text={ayah.ayah_text}
-                      onPress={() => handleAyahSelect(ayah)} // Set this item as displayed on press
+                      onPress={() => handleAyahSelect(ayah)}
                     />
                   );
                 })}
@@ -208,7 +208,7 @@ const AyahPrediction = () => {
           )}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
