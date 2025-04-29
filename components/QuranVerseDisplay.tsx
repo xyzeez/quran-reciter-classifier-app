@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Platform,
 } from "react-native";
 import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -83,17 +84,19 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   nameText: {
-    fontSize: 28,
+    fontSize: Platform.select({ ios: 34, default: 28 }),
     fontFamily: "surahnames",
     textAlign: "center",
+    lineHeight: Platform.select({ ios: 40, default: 32 }),
   },
   arabicNumberContainer: {
     width: "10%",
   },
   arabicNumberText: {
-    fontFamily: "qpchafs",
+    fontFamily: "Poppins_500Medium",
     textAlign: "center",
-    fontWeight: "700",
+    fontSize: 12,
+    marginBottom: -2,
   },
   englishNameContainer: {
     position: "absolute",

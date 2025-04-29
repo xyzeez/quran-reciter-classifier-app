@@ -20,17 +20,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.crest,
+  },
+  content: {
+    flex: 1,
     paddingHorizontal: 16,
-    height: "100%",
   },
   scrollContent: {
-    flexGrow: 1,
-    gap: 24,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
-  contentContainer: {
+  ayahSectionContainer: {
     gap: 20,
-    flexGrow: 1,
   },
   listContainer: {
     gap: 12,
@@ -73,11 +72,12 @@ const AyahPrediction = () => {
             setDisplayedAyah(apiMatchedAyah);
             finalSimilarAyahs = [
               apiMatchedAyah,
-              ...apiSimilarAyahs.filter(
-                (ayah) =>
+              ...apiSimilarAyahs.filter((ayah) => {
+                return (
                   ayah.surah_number_en !== apiMatchedAyah.surah_number_en ||
                   ayah.ayah_number_en !== apiMatchedAyah.ayah_number_en
-              ),
+                );
+              }),
             ];
           } else if (apiSimilarAyahs.length > 0) {
             setDisplayedAyah(apiSimilarAyahs[0]);
@@ -116,24 +116,28 @@ const AyahPrediction = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Ayah Identified" />
-        <LoadingScreen message="Identifying Ayah..." />
+        <View style={styles.content}>
+          <LoadingScreen message="Identifying Ayah..." />
+        </View>
       </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Ayah Identified" />
-        <ErrorScreen
-          title={error.title}
-          description={error.description}
-          iconName={error.icon}
-          buttonText="Go Back"
-          onButtonPress={() => router.back()}
-        />
+        <View style={styles.content}>
+          <ErrorScreen
+            title={error.title}
+            description={error.description}
+            iconName={error.icon}
+            buttonText="Go Back"
+            onButtonPress={() => router.back()}
+          />
+        </View>
       </SafeAreaView>
     );
   }
@@ -141,73 +145,78 @@ const AyahPrediction = () => {
   // Show empty state only if no ayah is available to display
   if (!displayedAyah) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Ayah Identified" />
-        <EmptyStateScreen
-          title="Ayah Not Found"
-          description="We couldn't identify any matching ayah from the provided audio. Please try recording again clearly."
-          iconName="sad-outline"
-          buttonText="Go Back"
-          onButtonPress={() => router.back()}
-        />
+        <View style={styles.content}>
+          <EmptyStateScreen
+            title="Ayah Not Found"
+            description="We couldn't identify any matching ayah from the provided audio. Please try recording again clearly."
+            iconName="sad-outline"
+            buttonText="Go Back"
+            onButtonPress={() => router.back()}
+          />
+        </View>
       </SafeAreaView>
     );
   }
 
   // Render the main content if an ayah (matched or similar) is available
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
       <NavigationTab title="Ayah Identified" />
-      <ScrollView
-        ref={scrollViewRef} // Assign the ref to the ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.contentContainer}>
-          {/* Display the currently selected Ayah */}
-          <QuranVerseDisplay
-            key={`${displayedAyah.surah_number_en}-${displayedAyah.ayah_number_en}`}
-            ayah_text={displayedAyah.ayah_text}
-            ayah_number={displayedAyah.ayah_number} // Expects string
-            surah_name_en={displayedAyah.surah_name_en}
-            surah_number={displayedAyah.surah_number} // Expects string
-            surah_number_en={displayedAyah.surah_number_en} // Expects string or number
-            unicode={displayedAyah.unicode || ""} // Pass unicode
-            isSingleResult={similarAyahs.length <= 1}
-            scrollViewRef={scrollViewRef}
-          />
+      <View style={styles.content}>
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.ayahSectionContainer}>
+            {/* Display the currently selected Ayah */}
+            <QuranVerseDisplay
+              key={`${displayedAyah.surah_number_en}-${displayedAyah.ayah_number_en}`}
+              ayah_text={displayedAyah.ayah_text}
+              ayah_number={displayedAyah.ayah_number} // Expects string
+              surah_name_en={displayedAyah.surah_name_en}
+              surah_number={displayedAyah.surah_number} // Expects string
+              surah_number_en={displayedAyah.surah_number_en} // Expects string or number
+              unicode={displayedAyah.unicode || ""} // Pass unicode
+              isSingleResult={similarAyahs.length <= 1}
+              scrollViewRef={scrollViewRef}
+            />
 
-          {/* Show similar ayahs list only if there are multiple results */}
-          {similarAyahs.length > 1 && (
-            <>
-              <SectionListHeader
-                title="Matching Ayahs"
-                count={similarAyahs.length}
-              />
-              <View style={styles.listContainer}>
-                {similarAyahs.map((ayah, index) => {
-                  // Determine if the current item is the one being displayed
-                  const isActive =
-                    displayedAyah?.surah_number_en === ayah.surah_number_en && // Use number for comparison
-                    displayedAyah?.ayah_number_en === ayah.ayah_number_en;
-                  return (
-                    <SurahListItem
-                      key={`${ayah.surah_number_en}-${ayah.ayah_number_en}-${index}`}
-                      active={isActive}
-                      surah_name={ayah.surah_name}
-                      surah_name_en={ayah.surah_name_en}
-                      surah_number={ayah.surah_number}
-                      surah_number_en={ayah.surah_number_en}
-                      ayah_number={ayah.ayah_number}
-                      onPress={() => handleAyahSelect(ayah)}
-                    />
-                  );
-                })}
-              </View>
-            </>
-          )}
-        </View>
-      </ScrollView>
+            {/* Show similar ayahs list only if there are multiple results */}
+            {similarAyahs.length > 1 && (
+              <>
+                <SectionListHeader
+                  title="Matching Ayahs"
+                  count={similarAyahs.length}
+                />
+                <View style={styles.listContainer}>
+                  {similarAyahs.map((ayah, index) => {
+                    // Determine if the current item is the one being displayed
+                    const isActive =
+                      displayedAyah?.surah_number_en === ayah.surah_number_en && // Use number for comparison
+                      displayedAyah?.ayah_number_en === ayah.ayah_number_en;
+                    return (
+                      <SurahListItem
+                        key={`${ayah.surah_number_en}-${ayah.ayah_number_en}-${index}`}
+                        active={isActive}
+                        surah_name={ayah.surah_name}
+                        surah_name_en={ayah.surah_name_en}
+                        surah_number={ayah.surah_number}
+                        surah_number_en={ayah.surah_number_en}
+                        ayah_number={ayah.ayah_number}
+                        ayah_text={ayah.ayah_text}
+                        onPress={() => handleAyahSelect(ayah)}
+                      />
+                    );
+                  })}
+                </View>
+              </>
+            )}
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

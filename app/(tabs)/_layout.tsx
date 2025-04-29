@@ -1,16 +1,21 @@
 import colors from "@/constants/colors";
 import { Tabs } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const tabStyles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 32,
     marginInline: 16,
     height: 48,
     borderRadius: 9999,
     backgroundColor: colors.white,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 20,
   },
   default: {
     alignItems: "center",
@@ -24,7 +29,7 @@ const tabStyles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     height: 48,
-    width: 110,
+    width: 120,
     marginTop: 10,
     borderRadius: 9999,
     backgroundColor: colors.green,
@@ -66,11 +71,13 @@ const TabIcon = ({
 };
 
 const TabsLayout = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarStyle: tabStyles.container,
+        tabBarStyle: { ...tabStyles.container, bottom: insets.bottom + 32 },
       }}
     >
       <Tabs.Screen

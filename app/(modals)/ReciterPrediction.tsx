@@ -156,7 +156,7 @@ const ReciterPrediction = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <LoadingScreen message="Analyzing audio..." />
       </SafeAreaView>
@@ -165,7 +165,7 @@ const ReciterPrediction = () => {
 
   if (prediction?.errorTitle) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <ErrorScreen
           title={prediction.errorTitle}
@@ -180,7 +180,7 @@ const ReciterPrediction = () => {
 
   if (!prediction?.reliable) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <EmptyStateScreen
           title="Reciter Not Identified"
@@ -194,7 +194,7 @@ const ReciterPrediction = () => {
 
   return (
     <GestureHandlerRootView style={styles.bottomSheetContainer}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <ScrollView
           showsVerticalScrollIndicator={false}

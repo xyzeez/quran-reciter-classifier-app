@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_400Regular",
     fontSize: 14,
     color: colors.black,
+    textAlign: "left",
+    height: 48,
   },
 });
 
@@ -34,8 +36,10 @@ const ReciterSearchBar = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        placeholderTextColor={colors.grey}
         style={styles.input}
         cursorColor={colors.green}
+        selectionColor={colors.green}
       />
     </View>
   );
