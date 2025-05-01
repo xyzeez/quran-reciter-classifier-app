@@ -48,6 +48,13 @@ const ReciterAudioPlayer = ({
   const [durationMillis, setDurationMillis] = useState<number | null>(null);
   const [positionMillis, setPositionMillis] = useState<number>(0);
   const soundRef = useRef<Audio.Sound | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Construct the audio URL based on reciter's serverUrl
   const getAudioUrl = () => {
@@ -74,47 +81,53 @@ const ReciterAudioPlayer = ({
     return finalUrl;
   };
 
-  useEffect(() => {
-    let isMounted = true;
+  const handlePlaybackStatusUpdate = async (status: AVPlaybackStatus) => {
+    if (!isMountedRef.current) return;
 
-    // Define the playback status update handler
-    const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-      if (!isMounted) return;
-
-      if (!status.isLoaded) {
-        if (status.error) {
-          setError(`Unable to play audio`);
-          console.error("Playback Error:", status.error);
-          setIsLoading(false);
-          setIsPlaying(false);
-          setIsReady(false);
-        }
-        return;
-      }
-
-      const successStatus = status as AVPlaybackStatusSuccess;
-
-      if (successStatus.isBuffering) {
-        setIsLoading(true);
-      } else {
+    if (!status.isLoaded) {
+      if (status.error) {
+        setError(`Unable to play audio`);
+        console.error("Playback Error:", status.error);
         setIsLoading(false);
-        setIsReady(true);
+        setIsPlaying(false);
+        setIsReady(false);
       }
+      return;
+    }
 
-      setPositionMillis(successStatus.positionMillis);
-      setDurationMillis(successStatus.durationMillis ?? null);
-      setIsPlaying(successStatus.isPlaying);
+    const successStatus = status as AVPlaybackStatusSuccess;
 
-      if (successStatus.didJustFinish && !successStatus.isLooping) {
+    if (successStatus.isBuffering) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+      setIsReady(true);
+    }
+
+    setPositionMillis(successStatus.positionMillis);
+    setDurationMillis(successStatus.durationMillis ?? null);
+
+    // Handle audio completion
+    if (successStatus.didJustFinish) {
+      try {
+        if (soundRef.current) {
+          await soundRef.current.stopAsync();
+          await soundRef.current.setPositionAsync(0);
+        }
         setIsPlaying(false);
         setPositionMillis(0);
+      } catch (error) {
+        console.error("Error handling audio completion:", error);
       }
+    } else {
+      setIsPlaying(successStatus.isPlaying);
+    }
 
-      setError(null);
-    };
+    setError(null);
+  };
 
+  useEffect(() => {
     const initializeAudio = async () => {
-      // If we don't have surah/ayah data and we're not already loading it, fetch it
       if (!surahAyahData && !isLoadingAyah) {
         try {
           await onNeedAyahData();
@@ -126,7 +139,6 @@ const ReciterAudioPlayer = ({
         return;
       }
 
-      // If we have surah/ayah data, proceed with audio loading
       if (surahAyahData) {
         try {
           setIsLoading(true);
@@ -155,11 +167,13 @@ const ReciterAudioPlayer = ({
             {
               shouldPlay: false,
               progressUpdateIntervalMillis: 50,
+              isLooping: false,
+              positionMillis: 0,
             },
             handlePlaybackStatusUpdate
           );
 
-          if (isMounted) {
+          if (isMountedRef.current) {
             if (soundRef.current) {
               await soundRef.current.stopAsync();
               await soundRef.current.unloadAsync();
@@ -181,7 +195,7 @@ const ReciterAudioPlayer = ({
           }
         } catch (e: any) {
           console.error("Failed to load sound", e);
-          if (isMounted) {
+          if (isMountedRef.current) {
             setError(`We couldn't load this audio. Please try again later.`);
             setIsLoading(false);
             setIsReady(false);
@@ -193,7 +207,6 @@ const ReciterAudioPlayer = ({
     initializeAudio();
 
     return () => {
-      isMounted = false;
       if (soundRef.current) {
         soundRef.current.stopAsync().then(() => {
           if (soundRef.current) {
@@ -214,7 +227,8 @@ const ReciterAudioPlayer = ({
         await currentSound.pauseAsync();
         setIsPlaying(false);
       } else {
-        if (positionMillis >= (durationMillis ?? Infinity) - 100) {
+        // If we're at the end or near the end, reset to beginning
+        if (positionMillis >= (durationMillis ?? 0) - 100) {
           await currentSound.setPositionAsync(0);
         }
         await currentSound.playAsync();
