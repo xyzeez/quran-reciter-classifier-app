@@ -27,3 +27,16 @@ export interface AyahPrediction {
   /** Similar ayahs by confidence */
   similarAyahs: Ayah[];
 }
+
+export interface SurahAyahData {
+  /** English numeral for surah (used in audio URL) */
+  surah_number_en: number;
+  /** English numeral for ayah (used in audio URL) */
+  ayah_number_en: number;
+  /** English surah name for display */
+  surah_name_en: string;
+  /** Arabic surah name for display */
+  surah_name?: string;
+  /** Arabic numeral for ayah display */
+  ayah_number?: string;
+}

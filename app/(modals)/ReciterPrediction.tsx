@@ -6,6 +6,7 @@ import { Reciter } from "@/types/reciter";
 import ReciterPredictionItem from "@/components/ReciterPredictionItem";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import reciterService from "@/services/reciterService";
+import ayahService from "@/services/ayahService";
 import { useRoute } from "@react-navigation/native";
 import ErrorScreen from "@/components/ErrorScreen";
 import EmptyStateScreen from "@/components/EmptyStateScreen";
@@ -15,6 +16,7 @@ import NavigationTab from "@/components/NavigationTab";
 import { ReciterPredictionRouteProp } from "@/types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SurahAyahData } from "@/types/ayah";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
@@ -49,6 +51,10 @@ const ReciterPrediction = () => {
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
   const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
+  const [surahAyahData, setSurahAyahData] = useState<SurahAyahData | null>(
+    null
+  );
+  const [isLoadingAyah, setIsLoadingAyah] = useState(false);
   const [prediction, setPrediction] = useState<{
     reliable: boolean;
     mainPrediction?: Reciter;
@@ -68,8 +74,36 @@ const ReciterPrediction = () => {
   const snapPoints = useMemo(() => ["50%"], []);
 
   const handleSheetChange = useCallback((index: number) => {
-    console.log("handleSheetChange", index);
+    if (index === -1) {
+      // Reset selected reciter when sheet is closed
+      setSelectedReciter(null);
+    }
   }, []);
+
+  const fetchAyahData = useCallback(async () => {
+    if (isLoadingAyah || surahAyahData || !fileParam) return;
+
+    setIsLoadingAyah(true);
+    try {
+      const file = JSON.parse(fileParam);
+      const response = await ayahService.predictAyah(file);
+
+      if (response.reliable && response.matchedAyah) {
+        console.log("Ayah Data Response:", response);
+        setSurahAyahData({
+          surah_number_en: response.matchedAyah.surah_number_en,
+          ayah_number_en: response.matchedAyah.ayah_number_en,
+          surah_name_en: response.matchedAyah.surah_name_en,
+          surah_name: response.matchedAyah.surah_name,
+          ayah_number: response.matchedAyah.ayah_number,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching ayah data:", error);
+    } finally {
+      setIsLoadingAyah(false);
+    }
+  }, [fileParam, isLoadingAyah, surahAyahData]);
 
   const handleSnapPress = useCallback((reciter: Reciter) => {
     setSelectedReciter(reciter);
@@ -236,7 +270,12 @@ const ReciterPrediction = () => {
         >
           <BottomSheetView>
             {selectedReciter && (
-              <ReciterAudioPlayer reciter={selectedReciter} />
+              <ReciterAudioPlayer
+                reciter={selectedReciter}
+                surahAyahData={surahAyahData}
+                onNeedAyahData={fetchAyahData}
+                isLoadingAyah={isLoadingAyah}
+              />
             )}
           </BottomSheetView>
         </BottomSheet>
