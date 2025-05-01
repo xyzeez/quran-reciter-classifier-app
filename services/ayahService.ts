@@ -1,4 +1,4 @@
-import { Ayah, AyahPrediction } from "@/types/ayah";
+import { Ayah, AyahPrediction } from "../types/ayah";
 import { API_URL } from "../configs"; // Import API_URL
 
 // Removed mock ayahs array and ensureEncodeField helper
@@ -24,29 +24,49 @@ const ayahService = {
       const response = await fetch(`${API_URL}/getAyah`, {
         method: "POST",
         body: formData,
-        // headers: { 'Content-Type': 'multipart/form-data' }, // Usually not needed with fetch + FormData
       });
 
       if (!response.ok) {
         let errorBody = {};
         try {
           errorBody = await response.json();
-        } catch (e) {}
-        console.error("Server error response (getAyah):", errorBody);
+        } catch (e) {
+          console.error("Failed to parse error response:", e);
+        }
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-      const result: AyahPrediction = await response.json();
+      const result = await response.json();
 
-      console.log("Result:", result);
+      const transformedResult: AyahPrediction = {
+        reliable: result.matches_found,
+        matchedAyah: result.best_match
+          ? {
+              surah_number: result.best_match.surah_number,
+              surah_number_en: result.best_match.surah_number_en,
+              surah_name: result.best_match.surah_name,
+              surah_name_en: result.best_match.surah_name_en,
+              ayah_number: result.best_match.ayah_number,
+              ayah_number_en: result.best_match.ayah_number_en,
+              ayah_text: result.best_match.ayah_text,
+              confidence_score: result.best_match.confidence_score,
+              unicode: result.best_match.unicode || "",
+            }
+          : null,
+        similarAyahs: (result.matches || []).map((match: any) => ({
+          surah_number: match.surah_number,
+          surah_number_en: match.surah_number_en,
+          surah_name: match.surah_name,
+          surah_name_en: match.surah_name_en,
+          ayah_number: match.ayah_number,
+          ayah_number_en: match.ayah_number_en,
+          ayah_text: match.ayah_text,
+          confidence_score: match.confidence_score,
+          unicode: match.unicode || "",
+        })),
+      };
 
-      // Optional: Add validation here to ensure the structure matches AyahPrediction
-      // if (typeof result.reliable !== 'boolean' || !Array.isArray(result.similarAyahs)) {
-      //    console.error('Invalid response structure from /getAyah:', result);
-      //    throw new Error('Invalid response structure from server');
-      // }
-
-      return result;
+      return transformedResult;
     } catch (error) {
       console.error("Error predicting ayah:", error);
       throw error;

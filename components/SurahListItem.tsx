@@ -38,13 +38,12 @@ const styles = StyleSheet.create({
   },
   surahNameArabic: {
     fontFamily: "qpchafs",
-    fontSize: 18, // Larger for Arabic Surah Name
+    fontSize: 18,
     fontWeight: "700",
     direction: "rtl",
     color: colors.black,
   },
   ayahNumberArabic: {
-    // fontFamily: "qpchafs", // Removed to prevent number transformation
     fontSize: 14,
     direction: "rtl",
     color: colors.grey,
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "justify",
     direction: "rtl",
-    lineHeight: 30, // Improved line height for readability
+    lineHeight: 30,
     color: colors.black,
   },
 });
@@ -87,7 +86,7 @@ const SurahListItem = ({
           {/* Arabic Info - Right */}
           <View style={styles.headerRight}>
             <Text style={styles.surahNameArabic}>{surah_name}</Text>
-            <Text style={styles.ayahNumberArabic}>سورة: {surah_number}</Text>
+            <Text style={styles.ayahNumberArabic}>سورة : {surah_number}</Text>
           </View>
         </View>
 
