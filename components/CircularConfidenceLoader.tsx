@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Animated, {
   useSharedValue,
@@ -13,7 +13,7 @@ import { CircularConfidenceLoaderProps } from "@/types/ui";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const CircularConfidenceLoader: React.FC<CircularConfidenceLoaderProps> = ({
+const CircularConfidenceLoader: FC<CircularConfidenceLoaderProps> = ({
   confidence,
   size = 45,
   strokeWidth = 3,

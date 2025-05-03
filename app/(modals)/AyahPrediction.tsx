@@ -13,7 +13,7 @@ import ErrorScreen from "@/components/ErrorScreen";
 import EmptyStateScreen from "@/components/EmptyStateScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import { AyahPredictionRouteProp } from "@/types/navigation";
-import { Ayah } from "@/types/ayah"; // Use Ayah type
+import { Ayah } from "@/types/ayah";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({

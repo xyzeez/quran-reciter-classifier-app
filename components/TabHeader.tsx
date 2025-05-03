@@ -1,4 +1,4 @@
-import React from "react";
+import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import colors from "@/constants/colors";
 import { TabHeaderProps } from "@/types/ui";
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const TabHeader: React.FC<TabHeaderProps> = ({ title, subtitle }) => {
+const TabHeader: FC<TabHeaderProps> = ({ title, subtitle }) => {
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.heading}>{title}</Text>

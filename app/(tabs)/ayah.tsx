@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Recorder from "@/components/Recorder";
 import { useRouter } from "expo-router";
 import TabHeader from "@/components/TabHeader";

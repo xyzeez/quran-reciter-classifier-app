@@ -22,7 +22,6 @@ import BottomSheet, {
   BottomSheetBackdropProps,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { Text } from "react-native";
 import ReciterAudioPlayer from "@/components/ReciterAudioPlayer";
 
 const styles = StyleSheet.create({

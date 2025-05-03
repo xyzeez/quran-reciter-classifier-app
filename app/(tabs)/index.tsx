@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import InputMethodToggle from "@/components/InputMethodToggle";
 import Recorder from "@/components/Recorder";

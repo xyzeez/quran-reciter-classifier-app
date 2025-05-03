@@ -1,7 +1,5 @@
-import { Ayah, AyahPrediction } from "../types/ayah";
-import { API_URL } from "../configs"; // Import API_URL
-
-// Removed mock ayahs array and ensureEncodeField helper
+import { AyahPrediction } from "../types/ayah";
+import { API_URL } from "../configs";
 
 const ayahService = {
   async predictAyah(audioFile: {
@@ -15,10 +13,6 @@ const ayahService = {
       name: audioFile.name,
       type: audioFile.type,
     } as any);
-
-    // Optional: Add parameters if needed, e.g., max_matches, min_confidence
-    // formData.append('max_matches', '10');
-    // formData.append('min_confidence', '0.65');
 
     try {
       const response = await fetch(`${API_URL}/getAyah`, {
