@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { Audio } from "expo-av";
 import TabHeader from "@/components/TabHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { RECITER_MAX_RECORDING_DURATION_SECONDS } from "@/configs";
 
 const styles = StyleSheet.create({
   container: {
@@ -85,7 +86,7 @@ const Index = () => {
       {fileInputType === "record" && (
         <Recorder
           onRecordingComplete={handleFileProcess}
-          maxDurationSeconds={15}
+          maxDurationSeconds={RECITER_MAX_RECORDING_DURATION_SECONDS}
         />
       )}
       {fileInputType === "upload" && (
