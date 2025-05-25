@@ -4,7 +4,7 @@ import colors from "@/constants/colors";
 import PredictedReciter from "@/components/PredictedReciter";
 import { Reciter } from "@/types/reciter";
 import ReciterPredictionItem from "@/components/ReciterPredictionItem";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import reciterService from "@/services/reciterService";
 import ayahService from "@/services/ayahService";
 import { useRoute } from "@react-navigation/native";
@@ -15,14 +15,9 @@ import SectionListHeader from "@/components/SectionListHeader";
 import NavigationTab from "@/components/NavigationTab";
 import { ReciterPredictionRouteProp } from "@/types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SurahAyahData } from "@/types/ayah";
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
 import ReciterAudioPlayer from "@/components/ReciterAudioPlayer";
+import { useBottomSheet } from "@/contexts/BottomSheetContext";
 
 const styles = StyleSheet.create({
   container: {
@@ -39,14 +34,12 @@ const styles = StyleSheet.create({
   footer: {
     height: 16,
   },
-  bottomSheetContainer: {
-    flex: 1,
-  },
 });
 
 const ReciterPrediction = () => {
   const router = useRouter();
   const route = useRoute<ReciterPredictionRouteProp>();
+  const { openSheet, isSheetOpen } = useBottomSheet();
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
   const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
@@ -68,16 +61,6 @@ const ReciterPrediction = () => {
       | "globe-outline";
     errorColor?: string;
   } | null>(null);
-
-  const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["50%"], []);
-
-  const handleSheetChange = useCallback((index: number) => {
-    if (index === -1) {
-      // Reset selected reciter when sheet is closed
-      setSelectedReciter(null);
-    }
-  }, []);
 
   const fetchAyahData = useCallback(async () => {
     if (isLoadingAyah || surahAyahData || !fileParam) return;
@@ -104,22 +87,26 @@ const ReciterPrediction = () => {
     }
   }, [fileParam, isLoadingAyah, surahAyahData]);
 
-  const handleSnapPress = useCallback((reciter: Reciter) => {
-    setSelectedReciter(reciter);
-    sheetRef.current?.snapToIndex(0);
-  }, []);
-
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-      />
-    ),
-    []
+  const handleListenPress = useCallback(
+    (reciter: Reciter) => {
+      setSelectedReciter(reciter);
+      openSheet(
+        <ReciterAudioPlayer
+          reciter={reciter}
+          surahAyahData={surahAyahData}
+          onNeedAyahData={fetchAyahData}
+          isLoadingAyah={isLoadingAyah}
+        />
+      );
+    },
+    [openSheet, surahAyahData, fetchAyahData, isLoadingAyah]
   );
+
+  useEffect(() => {
+    if (!isSheetOpen && selectedReciter) {
+      setSelectedReciter(null);
+    }
+  }, [isSheetOpen, selectedReciter]);
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -190,7 +177,7 @@ const ReciterPrediction = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Reciter Prediction" />
+        <NavigationTab title="Reciter Prediction" showSettingsButton={true} />
         <LoadingScreen message="Analyzing audio..." />
       </SafeAreaView>
     );
@@ -199,7 +186,7 @@ const ReciterPrediction = () => {
   if (prediction?.errorTitle) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Reciter Prediction" />
+        <NavigationTab title="Reciter Prediction" showSettingsButton={true} />
         <ErrorScreen
           title={prediction.errorTitle}
           subtitle={prediction.errorSubtitle}
@@ -214,7 +201,7 @@ const ReciterPrediction = () => {
   if (!prediction?.reliable) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Reciter Prediction" />
+        <NavigationTab title="Reciter Prediction" showSettingsButton={true} />
         <EmptyStateScreen
           title="Reciter Not Identified"
           description="We couldn't identify the reciter with confidence. The audio might be unclear or the reciter may not be in our database."
@@ -226,60 +213,34 @@ const ReciterPrediction = () => {
   }
 
   return (
-    <GestureHandlerRootView style={styles.bottomSheetContainer}>
-      <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Reciter Prediction" />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {prediction?.mainPrediction && (
-            <PredictedReciter
-              reciter={prediction.mainPrediction}
-              listenHandler={() => handleSnapPress(prediction.mainPrediction!)}
-            />
-          )}
-          <SectionListHeader
-            title="Top Predictions"
-            count={prediction?.topPredictions?.length}
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <NavigationTab title="Reciter Prediction" showSettingsButton={true} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {prediction?.mainPrediction && (
+          <PredictedReciter
+            reciter={prediction.mainPrediction}
+            listenHandler={() => handleListenPress(prediction.mainPrediction!)}
           />
-          <View style={styles.reciterList}>
-            {prediction?.topPredictions?.map((reciter, index) => (
-              <ReciterPredictionItem
-                key={index}
-                {...reciter}
-                onPress={() => handleSnapPress(reciter)}
-              />
-            ))}
-          </View>
-          <View style={styles.footer} />
-        </ScrollView>
-        <BottomSheet
-          ref={sheetRef}
-          onChange={handleSheetChange}
-          backdropComponent={renderBackdrop}
-          snapPoints={snapPoints}
-          index={-1}
-          enablePanDownToClose={true}
-          handleIndicatorStyle={{
-            backgroundColor: colors.green,
-            width: 40,
-            height: 4,
-          }}
-        >
-          <BottomSheetView>
-            {selectedReciter && (
-              <ReciterAudioPlayer
-                reciter={selectedReciter}
-                surahAyahData={surahAyahData}
-                onNeedAyahData={fetchAyahData}
-                isLoadingAyah={isLoadingAyah}
-              />
-            )}
-          </BottomSheetView>
-        </BottomSheet>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+        )}
+        <SectionListHeader
+          title="Top Predictions"
+          count={prediction?.topPredictions?.length}
+        />
+        <View style={styles.reciterList}>
+          {prediction?.topPredictions?.map((reciter, index) => (
+            <ReciterPredictionItem
+              key={index}
+              {...reciter}
+              onPress={() => handleListenPress(reciter)}
+            />
+          ))}
+        </View>
+        <View style={styles.footer} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

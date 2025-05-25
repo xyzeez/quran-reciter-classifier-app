@@ -117,7 +117,7 @@ const AyahPrediction = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" showSettingsButton={true} />
         <View style={styles.content}>
           <LoadingScreen message="Identifying Ayah..." />
         </View>
@@ -128,7 +128,7 @@ const AyahPrediction = () => {
   if (error) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" showSettingsButton={true} />
         <View style={styles.content}>
           <ErrorScreen
             title={error.title}
@@ -146,7 +146,7 @@ const AyahPrediction = () => {
   if (!displayedAyah) {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
-        <NavigationTab title="Ayah Identified" />
+        <NavigationTab title="Ayah Identified" showSettingsButton={true} />
         <View style={styles.content}>
           <EmptyStateScreen
             title="Ayah Not Found"
@@ -163,7 +163,7 @@ const AyahPrediction = () => {
   // Render the main content if an ayah (matched or similar) is available
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
-      <NavigationTab title="Ayah Identified" />
+      <NavigationTab title="Ayah Identified" showSettingsButton={true} />
       <View style={styles.content}>
         <ScrollView
           ref={scrollViewRef}

@@ -15,6 +15,7 @@ export interface InputMethodToggleProps {
 
 export interface NavigationTabProps {
   title: string;
+  showSettingsButton?: boolean;
 }
 
 export interface ModalHeaderProps {
@@ -102,4 +103,8 @@ export interface SurahListItemProps {
 export interface TabHeaderProps {
   title: string;
   subtitle: string;
+}
+
+export interface ContainedTabBarProps {
+  // ... existing code ...
 }

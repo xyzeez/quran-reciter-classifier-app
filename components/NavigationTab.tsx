@@ -11,11 +11,15 @@ import {
 import colors from "@/constants/colors";
 import { NavigationTabProps } from "@/types/ui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useBottomSheet } from "@/contexts/BottomSheetContext";
+import Settings from "@/components/Settings";
+import React from "react";
 
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
@@ -46,12 +50,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Poppins_700Bold",
     color: colors.green,
-    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
+  },
+  settingsButton: {
+    padding: 8,
+    borderRadius: 20,
   },
 });
 
-const NavigationTab = ({ title }: NavigationTabProps) => {
+const NavigationTab = ({ title, showSettingsButton }: NavigationTabProps) => {
   const insets = useSafeAreaInsets();
+  const { openSheet } = useBottomSheet();
+
+  const handleSettingsPress = () => {
+    openSheet(<Settings />);
+  };
 
   return (
     <Stack.Screen
@@ -61,7 +75,7 @@ const NavigationTab = ({ title }: NavigationTabProps) => {
           <View
             style={[
               styles.header,
-              { paddingTop: Platform.OS === "ios" ? insets.top : 16 },
+              { paddingTop: Platform.OS === "ios" ? insets.top + 16 : 16 },
             ]}
           >
             <View style={styles.titleContainer}>
@@ -80,6 +94,19 @@ const NavigationTab = ({ title }: NavigationTabProps) => {
                 {title}
               </Text>
             </View>
+            {showSettingsButton && (
+              <TouchableOpacity
+                style={styles.settingsButton}
+                onPress={handleSettingsPress}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name="settings-outline"
+                  size={24}
+                  color={colors.green}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         ),
       }}
