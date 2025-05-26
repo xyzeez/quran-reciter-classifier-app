@@ -1,5 +1,11 @@
 import colors from "@/constants/colors";
-import { StyleSheet, View, ScrollView, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { useState, useMemo, useEffect } from "react";
 import ReciterSearchBar from "@/components/ReciterSearchBar";
 import ReciterListItem from "@/components/ReciterListItem";
@@ -7,6 +13,7 @@ import reciterService from "@/services/reciterService";
 import { Reciter } from "@/types/reciter";
 import SectionListHeader from "@/components/SectionListHeader";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -36,16 +43,37 @@ const styles = StyleSheet.create({
   footer: {
     height: 96,
   },
+  errorText: {
+    fontSize: 16,
+    fontFamily: "Poppins_500Medium",
+    color: colors.red,
+    textAlign: "center",
+    marginTop: 32,
+  },
 });
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [reciters, setReciters] = useState<Reciter[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get reciters data from service
-    const fetchedReciters = reciterService.getAllReciters();
-    setReciters(fetchedReciters);
+    const loadReciters = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const fetchedReciters = await reciterService.getAllReciters();
+        setReciters(fetchedReciters);
+      } catch (err) {
+        console.error("Failed to load reciters:", err);
+        setError("Failed to load reciters. Please check your connection.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadReciters();
   }, []);
 
   const filteredReciters = useMemo(() => {
@@ -66,7 +94,7 @@ const Search = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Explore Reciters"
         subtitle="Browse through our collection of renowned Quran reciters"
@@ -83,20 +111,30 @@ const Search = () => {
           }
           count={filteredReciters.length}
         />
-        <ScrollView style={styles.listContainer}>
-          <View style={styles.reciterList}>
-            {filteredReciters.length > 0 ? (
-              filteredReciters.map((reciter) => (
-                <ReciterListItem key={reciter.name} {...reciter} />
-              ))
-            ) : (
-              <Text style={styles.noResults}>No reciters found</Text>
-            )}
-          </View>
-          <View style={styles.footer}></View>
-        </ScrollView>
+        {isLoading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.green}
+            style={{ marginTop: 32 }}
+          />
+        ) : error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : (
+          <ScrollView style={styles.listContainer}>
+            <View style={styles.reciterList}>
+              {filteredReciters.length > 0 ? (
+                filteredReciters.map((reciter) => (
+                  <ReciterListItem key={reciter.name} {...reciter} />
+                ))
+              ) : (
+                <Text style={styles.noResults}>No reciters found</Text>
+              )}
+            </View>
+            <View style={styles.footer}></View>
+          </ScrollView>
+        )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

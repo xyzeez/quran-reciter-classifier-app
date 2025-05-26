@@ -4,8 +4,9 @@ import colors from "@/constants/colors";
 import PredictedReciter from "@/components/PredictedReciter";
 import { Reciter } from "@/types/reciter";
 import ReciterPredictionItem from "@/components/ReciterPredictionItem";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import reciterService from "@/services/reciterService";
+import ayahService from "@/services/ayahService";
 import { useRoute } from "@react-navigation/native";
 import ErrorScreen from "@/components/ErrorScreen";
 import EmptyStateScreen from "@/components/EmptyStateScreen";
@@ -13,6 +14,15 @@ import LoadingScreen from "@/components/LoadingScreen";
 import SectionListHeader from "@/components/SectionListHeader";
 import NavigationTab from "@/components/NavigationTab";
 import { ReciterPredictionRouteProp } from "@/types/navigation";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SurahAyahData } from "@/types/ayah";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import ReciterAudioPlayer from "@/components/ReciterAudioPlayer";
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +39,9 @@ const styles = StyleSheet.create({
   footer: {
     height: 16,
   },
+  bottomSheetContainer: {
+    flex: 1,
+  },
 });
 
 const ReciterPrediction = () => {
@@ -36,7 +49,11 @@ const ReciterPrediction = () => {
   const route = useRoute<ReciterPredictionRouteProp>();
   const fileParam = route.params?.file;
   const [isLoading, setIsLoading] = useState(true);
-  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
+  const [surahAyahData, setSurahAyahData] = useState<SurahAyahData | null>(
+    null
+  );
+  const [isLoadingAyah, setIsLoadingAyah] = useState(false);
   const [prediction, setPrediction] = useState<{
     reliable: boolean;
     mainPrediction?: Reciter;
@@ -52,9 +69,60 @@ const ReciterPrediction = () => {
     errorColor?: string;
   } | null>(null);
 
+  const sheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["50%"], []);
+
+  const handleSheetChange = useCallback((index: number) => {
+    if (index === -1) {
+      // Reset selected reciter when sheet is closed
+      setSelectedReciter(null);
+    }
+  }, []);
+
+  const fetchAyahData = useCallback(async () => {
+    if (isLoadingAyah || surahAyahData || !fileParam) return;
+
+    setIsLoadingAyah(true);
+    try {
+      const file = JSON.parse(fileParam);
+      const response = await ayahService.predictAyah(file);
+
+      if (response.reliable && response.matchedAyah) {
+        console.log("Ayah Data Response:", response);
+        setSurahAyahData({
+          surah_number_en: response.matchedAyah.surah_number_en,
+          ayah_number_en: response.matchedAyah.ayah_number_en,
+          surah_name_en: response.matchedAyah.surah_name_en,
+          surah_name: response.matchedAyah.surah_name,
+          ayah_number: response.matchedAyah.ayah_number,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching ayah data:", error);
+    } finally {
+      setIsLoadingAyah(false);
+    }
+  }, [fileParam, isLoadingAyah, surahAyahData]);
+
+  const handleSnapPress = useCallback((reciter: Reciter) => {
+    setSelectedReciter(reciter);
+    sheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+      />
+    ),
+    []
+  );
+
   useEffect(() => {
     const fetchPredictions = async () => {
-      setPredictionError(null);
       setIsLoading(true);
       try {
         if (fileParam) {
@@ -105,8 +173,6 @@ const ReciterPrediction = () => {
         }
       } catch (error: any) {
         console.error("Error fetching predictions:", error);
-
-        // Set error state
         setPrediction({
           reliable: false,
           errorTitle: "Connection Error",
@@ -123,16 +189,16 @@ const ReciterPrediction = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <LoadingScreen message="Analyzing audio..." />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (prediction?.errorTitle) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <ErrorScreen
           title={prediction.errorTitle}
@@ -141,13 +207,13 @@ const ReciterPrediction = () => {
           iconName={prediction.errorIcon || "alert-circle-outline"}
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!prediction?.reliable) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <NavigationTab title="Reciter Prediction" />
         <EmptyStateScreen
           title="Reciter Not Identified"
@@ -155,32 +221,65 @@ const ReciterPrediction = () => {
           iconName="person-outline"
           onButtonPress={() => router.back()}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <NavigationTab title="Reciter Prediction" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {prediction?.mainPrediction && (
-          <PredictedReciter reciter={prediction.mainPrediction} />
-        )}
-        <SectionListHeader
-          title={`Top ${prediction?.topPredictions?.length} Predictions`}
-          count={prediction?.topPredictions?.length}
-        />
-        <View style={styles.reciterList}>
-          {prediction?.topPredictions?.map((reciter, index) => (
-            <ReciterPredictionItem key={index} {...reciter} />
-          ))}
-        </View>
-        <View style={styles.footer} />
-      </ScrollView>
-    </View>
+    <GestureHandlerRootView style={styles.bottomSheetContainer}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
+        <NavigationTab title="Reciter Prediction" />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {prediction?.mainPrediction && (
+            <PredictedReciter
+              reciter={prediction.mainPrediction}
+              listenHandler={() => handleSnapPress(prediction.mainPrediction!)}
+            />
+          )}
+          <SectionListHeader
+            title="Top Predictions"
+            count={prediction?.topPredictions?.length}
+          />
+          <View style={styles.reciterList}>
+            {prediction?.topPredictions?.map((reciter, index) => (
+              <ReciterPredictionItem
+                key={index}
+                {...reciter}
+                onPress={() => handleSnapPress(reciter)}
+              />
+            ))}
+          </View>
+          <View style={styles.footer} />
+        </ScrollView>
+        <BottomSheet
+          ref={sheetRef}
+          onChange={handleSheetChange}
+          backdropComponent={renderBackdrop}
+          snapPoints={snapPoints}
+          index={-1}
+          enablePanDownToClose={true}
+          handleIndicatorStyle={{
+            backgroundColor: colors.green,
+            width: 40,
+            height: 4,
+          }}
+        >
+          <BottomSheetView>
+            {selectedReciter && (
+              <ReciterAudioPlayer
+                reciter={selectedReciter}
+                surahAyahData={surahAyahData}
+                onNeedAyahData={fetchAyahData}
+                isLoadingAyah={isLoadingAyah}
+              />
+            )}
+          </BottomSheetView>
+        </BottomSheet>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

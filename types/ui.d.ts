@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ViewStyle, ScrollView } from "react-native";
-import React from "react";
+import { RefObject } from "react";
 
 export interface ReciterSearchBarProps {
   value: string;
@@ -67,9 +67,9 @@ export interface QuranVerseDisplayProps {
   surah_name_en: string;
   surah_number: string;
   surah_number_en: number | string;
-  encode: string;
+  unicode: string;
   isSingleResult?: boolean;
-  scrollViewRef?: React.RefObject<ScrollView>;
+  scrollViewRef?: RefObject<ScrollView>;
 }
 
 export interface SurahTitleDisplayProps {

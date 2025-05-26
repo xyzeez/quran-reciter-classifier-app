@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 
 const Uploader = ({
   onFileUpload,
-  acceptedFileTypes = ["audio/*"],
+  acceptedFileTypes = ["audio/*", "video/*"],
 }: UploaderProps) => {
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
@@ -128,6 +128,8 @@ const Uploader = ({
       let mimeType = "audio/mpeg";
       if (fileExtension === "wav") mimeType = "audio/wav";
       if (fileExtension === "m4a") mimeType = "audio/x-m4a";
+      if (fileExtension === "mp4") mimeType = "video/mp4";
+      if (fileExtension === "mov") mimeType = "video/quicktime";
 
       await onFileUpload({
         uri: uploadedFile.uri,
@@ -161,16 +163,25 @@ const Uploader = ({
             color={colors.green}
           />
           <Text style={styles.promptText}>
-            Tap to select an audio file (MP3, WAV, M4A)
+            Tap to select an audio or video file (MP3, WAV, M4A, MP4, MOV)
           </Text>
         </View>
       ) : (
         <View style={styles.fileInfoContainer}>
-          <Ionicons
-            name="musical-notes-outline"
-            size={80}
-            color={colors.green}
-          />
+          {(() => {
+            const fileExtension = uploadedFile.name
+              .split(".")
+              .pop()
+              ?.toLowerCase();
+            const isVideo = fileExtension === "mp4" || fileExtension === "mov";
+            return (
+              <Ionicons
+                name={isVideo ? "film-outline" : "musical-notes-outline"}
+                size={80}
+                color={colors.green}
+              />
+            );
+          })()}
           <View style={styles.fileDetailsRow}>
             <Text
               style={styles.fileText}

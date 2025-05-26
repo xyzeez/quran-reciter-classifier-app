@@ -1,6 +1,4 @@
 import { RouteProp } from "@react-navigation/native";
-import { Reciter } from "./reciter";
-import { Ayah } from "./ayah";
 
 export type AyahPredictionRouteParams = {
   file: string;

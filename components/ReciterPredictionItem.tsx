@@ -4,63 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { ReciterListItemProps } from "@/types/reciter";
 import CircularConfidenceLoader from "./CircularConfidenceLoader";
 
-const ReciterPredictionItem = ({
-  name,
-  nationality,
-  flagUrl,
-  confidence,
-  imageUrl,
-  onPress,
-}: ReciterListItemProps) => {
-  return (
-    <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
-      onPress={onPress}
-    >
-      {/* Image with border */}
-      <View style={styles.imageWrapper}>
-        <Image
-          source={{ uri: imageUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
-
-      {/* Info container */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-          {name}
-        </Text>
-        <View style={styles.bottomRow}>
-          <View style={styles.nationalityContainer}>
-            <Image
-              source={{ uri: flagUrl }}
-              style={styles.flag}
-              resizeMode="cover"
-            />
-            <Text style={styles.nationality} numberOfLines={1}>
-              {nationality}
-            </Text>
-          </View>
-          <View style={styles.listenButton}>
-            <Ionicons name="play-circle" size={14} color={colors.white} />
-            <Text style={styles.listenText}>Listen</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Confidence score */}
-      <View style={styles.confidenceContainer}>
-        <CircularConfidenceLoader
-          confidence={confidence}
-          size={48}
-          textSize={12}
-        />
-      </View>
-    </Pressable>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -155,5 +98,69 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
+
+const ReciterPredictionItem = ({
+  name,
+  nationality,
+  flagUrl,
+  confidence,
+  imageUrl,
+  onPress,
+}: ReciterListItemProps) => {
+  const handleListen = () => {
+    // Call the onPress handler with the reciter data
+    if (onPress) {
+      onPress();
+    }
+  };
+
+  return (
+    <Pressable
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+      onPress={onPress}
+    >
+      {/* Image with border */}
+      <View style={styles.imageWrapper}>
+        <Image
+          source={{ uri: imageUrl }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+
+      {/* Info container */}
+      <View style={styles.infoContainer}>
+        <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+          {name}
+        </Text>
+        <View style={styles.bottomRow}>
+          <View style={styles.nationalityContainer}>
+            <Image
+              source={{ uri: flagUrl }}
+              style={styles.flag}
+              resizeMode="cover"
+            />
+            <Text style={styles.nationality} numberOfLines={1}>
+              {nationality}
+            </Text>
+          </View>
+          <Pressable style={styles.listenButton} onPress={handleListen}>
+            <Ionicons name="play-circle" size={14} color={colors.white} />
+            <Text style={styles.listenText}>Listen</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Confidence score */}
+      <View style={styles.confidenceContainer}>
+        <CircularConfidenceLoader
+          confidence={confidence}
+          size={48}
+          textSize={12}
+        />
+      </View>
+    </Pressable>
+  );
+};
 
 export default ReciterPredictionItem;

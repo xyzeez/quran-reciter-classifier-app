@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import InputMethodToggle from "@/components/InputMethodToggle";
 import Recorder from "@/components/Recorder";
@@ -7,6 +7,8 @@ import Uploader from "@/components/Uploader";
 import { useRouter } from "expo-router";
 import { Audio } from "expo-av";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { RECITER_MAX_RECORDING_DURATION_SECONDS } from "@/configs";
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +74,7 @@ const Index = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Identify the Qari"
         subtitle="Record or upload an audio file to identify the reciter"
@@ -84,14 +86,14 @@ const Index = () => {
       {fileInputType === "record" && (
         <Recorder
           onRecordingComplete={handleFileProcess}
-          maxDurationSeconds={15}
+          maxDurationSeconds={RECITER_MAX_RECORDING_DURATION_SECONDS}
         />
       )}
       {fileInputType === "upload" && (
         <Uploader onFileUpload={handleFileProcess} />
       )}
       {isProcessing && <ActivityIndicator size="large" color={colors.green} />}
-    </View>
+    </SafeAreaView>
   );
 };
 

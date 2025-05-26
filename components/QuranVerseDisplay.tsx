@@ -5,12 +5,12 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Platform,
 } from "react-native";
 import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import frame from "@/assets/frame.png";
-import { QuranVerseDisplayProps } from "@/types/ui";
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // Surah title styles
   titleContainer: {
     position: "relative",
     height: 48,
@@ -85,17 +84,19 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   nameText: {
-    fontSize: 28,
+    fontSize: Platform.select({ ios: 34, default: 28 }),
     fontFamily: "surahnames",
     textAlign: "center",
+    lineHeight: Platform.select({ ios: 40, default: 32 }),
   },
   arabicNumberContainer: {
     width: "10%",
   },
   arabicNumberText: {
-    fontFamily: "qpchafs",
+    fontFamily: "Poppins_500Medium",
     textAlign: "center",
-    fontWeight: "700",
+    fontSize: 12,
+    marginBottom: -2,
   },
   englishNameContainer: {
     position: "absolute",
@@ -118,13 +119,24 @@ const styles = StyleSheet.create({
   },
 });
 
+interface QuranVerseDisplayProps {
+  ayah_text: string;
+  ayah_number: string;
+  surah_name_en: string;
+  surah_number: string;
+  surah_number_en: number | string;
+  unicode: string;
+  isSingleResult?: boolean;
+  scrollViewRef?: React.RefObject<ScrollView>;
+}
+
 const QuranVerseDisplay = ({
   ayah_text,
   ayah_number,
   surah_name_en,
   surah_number,
   surah_number_en,
-  encode,
+  unicode,
   isSingleResult = false,
   scrollViewRef,
 }: QuranVerseDisplayProps) => {
@@ -162,7 +174,6 @@ const QuranVerseDisplay = ({
         },
       ]}
     >
-      {/* Surah Title Display */}
       <View style={styles.titleContainer}>
         <Image source={frame} style={styles.titleFrame} />
         <View style={styles.titleContent}>
@@ -175,7 +186,7 @@ const QuranVerseDisplay = ({
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.nameText}>
-              {encode}
+              {unicode}
               {"\uE900"}
             </Text>
           </View>
@@ -189,7 +200,6 @@ const QuranVerseDisplay = ({
         </View>
       </View>
 
-      {/* Verse Text */}
       <Text
         style={styles.text}
         onTextLayout={handleTextLayout}

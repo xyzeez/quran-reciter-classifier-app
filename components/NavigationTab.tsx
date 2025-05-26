@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import colors from "@/constants/colors";
 import { NavigationTabProps } from "@/types/ui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   header: {
@@ -50,12 +51,19 @@ const styles = StyleSheet.create({
 });
 
 const NavigationTab = ({ title }: NavigationTabProps) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Stack.Screen
       options={{
         headerShown: true,
         header: () => (
-          <View style={styles.header}>
+          <View
+            style={[
+              styles.header,
+              { paddingTop: Platform.OS === "ios" ? insets.top : 16 },
+            ]}
+          >
             <View style={styles.titleContainer}>
               <TouchableOpacity
                 style={styles.backButton}

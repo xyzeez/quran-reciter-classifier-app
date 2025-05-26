@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     height: 130,
     borderRadius: 65,
     borderWidth: 3,
-    borderColor: colors.green + "20", // 20% opacity
+    borderColor: colors.green + "20",
   },
   confidenceContainer: {
     position: "absolute",
@@ -78,7 +78,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
+const PredictedReciter = ({
+  reciter,
+  listenHandler,
+}: {
+  reciter: Reciter;
+  listenHandler: () => void;
+}) => {
+  const handleListen = () => {
+    listenHandler();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -107,7 +117,7 @@ const PredictedReciter = ({ reciter }: { reciter: Reciter }) => {
             <Text style={styles.nationality}>{reciter.nationality}</Text>
           </View>
 
-          <Pressable style={styles.listenButton}>
+          <Pressable style={styles.listenButton} onPress={handleListen}>
             <Ionicons name="play-circle" size={18} color={colors.white} />
             <Text style={styles.listenText}>Listen</Text>
           </Pressable>

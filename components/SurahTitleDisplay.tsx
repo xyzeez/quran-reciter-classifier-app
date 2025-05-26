@@ -54,25 +54,25 @@ const styles = StyleSheet.create({
 });
 
 const SurahTitleDisplay = ({
-  surahNumberArabic,
-  surahNumberEnglish,
-  surahNameArabic,
+  surah_number,
+  surah_number_en,
+  surah_name,
 }: SurahTitleDisplayProps) => {
   return (
     <View style={styles.container}>
       <Image source={frame} style={styles.frame} />
       <View style={styles.content}>
         <View style={styles.numberContainer}>
-          <Text style={styles.numberText}>{surahNumberEnglish}</Text>
+          <Text style={styles.numberText}>{surah_number_en}</Text>
         </View>
         <View style={styles.nameContainer}>
           <Text style={styles.nameText}>
-            {surahNameArabic}
+            {surah_name}
             {"\uE900"}
           </Text>
         </View>
         <View style={styles.arabicNumberContainer}>
-          <Text style={styles.arabicNumberText}>{surahNumberArabic}</Text>
+          <Text style={styles.arabicNumberText}>{surah_number}</Text>
         </View>
       </View>
     </View>

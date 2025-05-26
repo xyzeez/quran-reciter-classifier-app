@@ -1,8 +1,10 @@
 import colors from "@/constants/colors";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Recorder from "@/components/Recorder";
 import { useRouter } from "expo-router";
 import TabHeader from "@/components/TabHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AYAH_MAX_RECORDING_DURATION_SECONDS } from "@/configs";
 
 const styles = StyleSheet.create({
   container: {
@@ -38,16 +40,16 @@ const Ayah = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TabHeader
         title="Identify the Ayah"
         subtitle="Record the recitation to identify which ayah is being recited"
       />
       <Recorder
         onRecordingComplete={handleFileProcess}
-        maxDurationSeconds={10}
+        maxDurationSeconds={AYAH_MAX_RECORDING_DURATION_SECONDS}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
